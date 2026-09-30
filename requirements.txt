@@ -4,3 +4,4 @@ google-genai==2.24.0
 pypdf==6.19.0
 python-dotenv==1.2.2
 gunicorn
+groq==1.7.0
