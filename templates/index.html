@@ -1,0 +1,1760 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>QuizNest | Learn Smarter with AI</title>
+    <link rel="manifest" href="{{ url_for('static', filename='manifest.json') }}">
+
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700;800&display=swap');
+
+        :root {
+            /* QuizNest official colour palette */
+            --primary: #5145A5;
+            --primary-dark: #40358B;
+            --primary-light: #F0EDFA;
+            --navy: #25245B;
+            --text: #25245B;
+            --muted: #77788F;
+            --border: #E9E9F3;
+            --background: #F7F8FC;
+            --white: #FFFFFF;
+        }
+
+        * {
+            box-sizing: border-box;
+        }
+
+        body {
+            margin: 0;
+            font-family: 'DM Sans', Arial, sans-serif;
+            background: var(--background);
+            color: var(--text);
+            line-height: 1.5;
+        }
+
+        button,
+        input,
+        textarea,
+        select {
+            font: inherit;
+        }
+
+        a,
+        button {
+            -webkit-tap-highlight-color: transparent;
+        }
+
+        a:focus-visible,
+        button:focus-visible,
+        input:focus-visible,
+        textarea:focus-visible,
+        select:focus-visible {
+            outline: 3px solid #BEB6EC;
+            outline-offset: 3px;
+        }
+
+        /* HEADER AND QUIZNEST LOGO */
+
+        .topbar {
+            background: var(--white);
+            border-bottom: 1px solid var(--border);
+        }
+
+        .topbar-inner {
+            max-width: 1180px;
+            margin: auto;
+            padding: 17px 25px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 20px;
+        }
+
+        .brand {
+            display: flex;
+            align-items: center;
+            gap: 11px;
+            color: var(--navy);
+            text-decoration: none;
+        }
+
+        .quiznest-logo {
+            width: 48px;
+            height: 48px;
+            flex-shrink: 0;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border-radius: 13px;
+            background: #5145A5;
+        }
+
+        .quiznest-logo span {
+            color: #FFFFFF;
+            font-family: Arial, Helvetica, sans-serif;
+            font-size: 32px;
+            font-weight: 800;
+            line-height: 1;
+        }
+
+        .brand-name {
+            font-size: 23px;
+            font-weight: 800;
+            letter-spacing: -.6px;
+        }
+
+        .brand-name span {
+            color: var(--primary);
+        }
+
+        .portal-nav {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 10px;
+        }
+
+        .portal-link {
+            padding: 11px 15px;
+            border-radius: 10px;
+            text-decoration: none;
+            font-size: 13px;
+            font-weight: 700;
+            background: var(--primary-light);
+            color: var(--primary-dark);
+        }
+
+        .portal-link:hover {
+            background: #E5DFF6;
+        }
+
+        .portal-link.active {
+            background: var(--primary);
+            color: white;
+        }
+
+        .teacher-link {
+            background: var(--navy);
+            color: white;
+        }
+
+        .teacher-link:hover {
+            background: #353477;
+        }
+
+        main {
+            max-width: 1180px;
+            margin: auto;
+            padding: 30px 25px 65px;
+        }
+
+        /* HOME PAGE */
+
+        .hero {
+            display: grid;
+            grid-template-columns: 1.3fr .7fr;
+            align-items: center;
+            min-height: 270px;
+            padding: 43px 48px;
+            margin-bottom: 31px;
+            border-radius: 23px;
+            background: linear-gradient(
+                120deg,
+                #25245B,
+                #393477 60%,
+                #5145A5
+            );
+            color: white;
+            overflow: hidden;
+        }
+
+        .eyebrow {
+            display: inline-block;
+            padding: 7px 13px;
+            margin-bottom: 19px;
+            background: rgba(255, 255, 255, .13);
+            border-radius: 30px;
+            font-size: 12px;
+            font-weight: 700;
+        }
+
+        .hero h1 {
+            margin: 0 0 14px;
+            font-size: clamp(29px, 4vw, 44px);
+            line-height: 1.15;
+        }
+
+        .hero p {
+            max-width: 490px;
+            margin: 0;
+            color: #E6E2FF;
+            font-size: 15px;
+            line-height: 1.8;
+        }
+
+        .hero-visual {
+            display: grid;
+            place-items: center;
+            font-size: 100px;
+        }
+
+        .section-heading {
+            margin-bottom: 18px;
+        }
+
+        .section-heading h2 {
+            margin: 0 0 5px;
+            font-size: 23px;
+        }
+
+        .section-heading p,
+        .muted {
+            margin: 0;
+            color: var(--muted);
+            font-size: 14px;
+        }
+
+        .features {
+            display: grid;
+            grid-template-columns: repeat(4, minmax(0, 1fr));
+            gap: 16px;
+        }
+
+        .feature-card {
+            display: block;
+            min-width: 0;
+            padding: 22px;
+            border: 1px solid var(--border);
+            border-radius: 17px;
+            background: white;
+            text-decoration: none;
+            color: inherit;
+            transition: transform .2s, box-shadow .2s;
+        }
+
+        .feature-card:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 12px 28px rgba(37, 36, 91, .08);
+        }
+
+        .feature-icon {
+            display: grid;
+            place-items: center;
+            width: 49px;
+            height: 49px;
+            margin-bottom: 18px;
+            border-radius: 14px;
+            background: var(--primary-light);
+            font-size: 23px;
+        }
+
+        .feature-card h3 {
+            margin: 0 0 7px;
+            font-size: 16px;
+        }
+
+        .feature-card p {
+            min-height: 42px;
+            margin: 0 0 16px;
+            color: var(--muted);
+            font-size: 13px;
+        }
+
+        .feature-action {
+            color: var(--primary-dark);
+            font-size: 13px;
+            font-weight: 800;
+        }
+
+        /* INNER PAGES */
+
+        .page-heading {
+            margin-bottom: 22px;
+        }
+
+        .back-link {
+            display: inline-block;
+            margin-bottom: 16px;
+            color: var(--primary-dark);
+            font-size: 13px;
+            font-weight: 700;
+            text-decoration: none;
+        }
+
+        .page-heading h1 {
+            margin: 0 0 5px;
+            font-size: clamp(25px, 4vw, 34px);
+        }
+
+        .page-heading p {
+            margin: 0;
+            color: var(--muted);
+        }
+
+        .card {
+            width: 100%;
+            padding: 27px;
+            background: white;
+            border: 1px solid var(--border);
+            border-radius: 18px;
+            box-shadow: 0 4px 18px rgba(37, 36, 91, .025);
+        }
+
+        .card + .card {
+            margin-top: 20px;
+        }
+
+        .card-heading {
+            display: flex;
+            align-items: center;
+            gap: 13px;
+            margin-bottom: 17px;
+        }
+
+        .card-icon {
+            display: grid;
+            place-items: center;
+            width: 45px;
+            height: 45px;
+            flex-shrink: 0;
+            background: var(--primary-light);
+            border-radius: 12px;
+            font-size: 21px;
+        }
+
+        .card-heading h2 {
+            margin: 0 0 3px;
+            font-size: 19px;
+        }
+
+        .card-heading p {
+            margin: 0;
+            color: var(--muted);
+            font-size: 12px;
+        }
+
+        label {
+            display: block;
+            margin: 19px 0 8px;
+            font-size: 13px;
+            font-weight: 800;
+        }
+
+        textarea,
+        input,
+        select {
+            width: 100%;
+            padding: 13px 15px;
+            border: 1px solid #DEDFEC;
+            border-radius: 11px;
+            background: #FCFCFF;
+            color: var(--text);
+            font-size: 14px;
+        }
+
+        textarea {
+            min-height: 145px;
+            resize: vertical;
+        }
+
+        input[type="file"] {
+            background: #F8F7FF;
+            border-style: dashed;
+            padding: 18px;
+        }
+
+        .field-group + .field-group {
+            margin-top: 18px;
+        }
+
+        .material-layout {
+            display: grid;
+            grid-template-columns: repeat(2, minmax(0, 1fr));
+            gap: 20px;
+        }
+
+        .material-layout .field-group + .field-group {
+            margin-top: 0;
+        }
+
+        .primary-button {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            min-height: 45px;
+            margin-top: 19px;
+            padding: 12px 20px;
+            background: var(--primary);
+            color: white;
+            border: 0;
+            border-radius: 10px;
+            font-size: 14px;
+            font-weight: 800;
+            cursor: pointer;
+        }
+
+        .primary-button:hover:not(:disabled) {
+            background: var(--primary-dark);
+        }
+
+        button:disabled {
+            opacity: .6;
+            cursor: not-allowed;
+        }
+
+        .secondary {
+            background: var(--primary-light);
+            color: var(--primary-dark);
+        }
+
+        .result {
+            margin-top: 22px;
+            padding: 19px;
+            background: #F5F2FD;
+            border: 1px solid #E5DFF6;
+            border-radius: 12px;
+            line-height: 1.8;
+            overflow-wrap: anywhere;
+        }
+
+        .hidden {
+            display: none !important;
+        }
+
+        .model-label {
+            display: inline-block;
+            margin-bottom: 11px;
+            padding: 5px 10px;
+            background: #E5DFF6;
+            color: var(--primary-dark);
+            border-radius: 7px;
+            font-size: 12px;
+            font-weight: 800;
+        }
+
+        .answer-text {
+            white-space: pre-wrap;
+            font-size: 14px;
+        }
+
+        .status,
+        .file-hint {
+            margin: 12px 0 0;
+            color: var(--muted);
+            font-size: 13px;
+        }
+
+        .file-info {
+            margin-top: 12px;
+            padding: 13px;
+            background: var(--primary-light);
+            border-radius: 10px;
+            font-size: 13px;
+            overflow-wrap: anywhere;
+        }
+
+        .error {
+            color: #B91C1C !important;
+        }
+
+        /* QUIZ */
+
+        .quiz-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 12px;
+            margin-bottom: 17px;
+        }
+
+        .quiz-header h2 {
+            margin: 0;
+        }
+
+        #questionNumber {
+            padding: 7px 12px;
+            background: var(--primary-light);
+            color: var(--primary-dark);
+            border-radius: 8px;
+            font-size: 12px;
+            font-weight: 800;
+        }
+
+        .progress-track {
+            height: 8px;
+            margin-bottom: 26px;
+            background: #EEEDF7;
+            border-radius: 20px;
+            overflow: hidden;
+        }
+
+        .progress-fill {
+            height: 100%;
+            width: 0;
+            background: var(--primary);
+            transition: width .3s;
+        }
+
+        #questionText {
+            margin: 0 0 21px;
+            font-size: 20px;
+        }
+
+        .option {
+            display: block;
+            width: 100%;
+            margin: 10px 0;
+            padding: 15px 17px;
+            background: #FCFCFF;
+            color: var(--text);
+            border: 1px solid #E4E4EE;
+            border-radius: 11px;
+            text-align: left;
+            cursor: pointer;
+        }
+
+        .option:hover:not(:disabled) {
+            border-color: var(--primary);
+            background: var(--primary-light);
+        }
+
+        .option.correct {
+            background: #E8F8ED;
+            border-color: #16A34A;
+            color: #166534;
+        }
+
+        .option.wrong {
+            background: #FFF0F0;
+            border-color: #DC2626;
+            color: #991B1B;
+        }
+
+        .feedback {
+            margin-top: 19px;
+            padding: 17px;
+            background: #F6F7FB;
+            border-radius: 11px;
+            white-space: pre-wrap;
+            font-size: 14px;
+        }
+
+        .score-content {
+            padding: 20px 0;
+            text-align: center;
+        }
+
+        .score-icon {
+            font-size: 55px;
+        }
+
+        .score {
+            margin: 14px 0 0;
+            color: var(--primary-dark);
+            font-size: 43px;
+            font-weight: 800;
+        }
+
+        footer {
+            padding: 22px 15px;
+            text-align: center;
+            border-top: 1px solid var(--border);
+            color: var(--muted);
+            font-size: 12px;
+        }
+
+        /* RESPONSIVE */
+
+        @media (max-width: 950px) {
+            .features {
+                grid-template-columns: repeat(2, minmax(0, 1fr));
+            }
+        }
+
+        @media (max-width: 680px) {
+            .topbar-inner {
+                flex-direction: column;
+                padding: 15px;
+            }
+
+            .portal-nav {
+                justify-content: center;
+            }
+
+            main {
+                padding: 20px 14px 45px;
+            }
+
+            .hero {
+                grid-template-columns: 1fr;
+                padding: 29px 25px;
+            }
+
+            .hero-visual {
+                display: none;
+            }
+
+            .material-layout {
+                grid-template-columns: 1fr;
+            }
+
+            .card {
+                padding: 21px;
+            }
+        }
+
+        @media (max-width: 400px) {
+            .features {
+                grid-template-columns: 1fr;
+            }
+
+            .portal-link {
+                padding: 10px;
+                font-size: 12px;
+            }
+        }
+
+        @media (prefers-reduced-motion: reduce) {
+            * {
+                transition: none !important;
+            }
+        }
+    </style>
+</head>
+
+<body>
+
+<!-- HEADER -->
+
+<header class="topbar">
+    <div class="topbar-inner">
+
+        <a class="brand" href="{{ url_for('home') }}">
+            <span class="quiznest-logo" aria-hidden="true">
+                <span>Q</span>
+            </span>
+
+            <span class="brand-name">
+                Quiz<span>Nest</span>
+            </span>
+        </a>
+
+        <nav class="portal-nav" aria-label="Main navigation">
+
+            <a
+                class="portal-link {% if page == 'home' %}active{% endif %}"
+                href="{{ url_for('home') }}"
+            >
+                Home
+            </a>
+
+            <a
+                class="portal-link {% if page == 'ask_ai' %}active{% endif %}"
+                href="{{ url_for('ask_ai_page') }}"
+            >
+                Ask AI
+            </a>
+
+            <a
+                class="portal-link {% if page == 'ai_quiz' %}active{% endif %}"
+                href="{{ url_for('generate_quiz_page') }}"
+            >
+                AI Quiz
+            </a>
+
+            <a
+                class="portal-link {% if page == 'material' %}active{% endif %}"
+                href="{{ url_for('study_quiz_page') }}"
+            >
+                Study Material
+            </a>
+
+            <a
+                class="portal-link"
+                href="{{ url_for('student_tests') }}"
+            >
+                Teacher Tests
+            </a>
+
+            <a
+                class="portal-link teacher-link"
+                href="{{ url_for('teacher_login') }}"
+            >
+                Teacher Portal ↗
+            </a>
+
+        </nav>
+    </div>
+</header>
+
+<main>
+
+{% if page == "home" %}
+
+<!-- STUDENT HOME -->
+
+<section class="hero">
+    <div>
+        <span class="eyebrow">
+            📚 EXPLORE • LEARN • GROW
+        </span>
+
+        <h1>
+            Learn smarter.<br>
+            Achieve more.
+        </h1>
+
+        <p>
+            Ask questions, practice with AI-powered quizzes
+            and prepare for teacher tests — all in one place.
+        </p>
+    </div>
+
+    <div class="hero-visual" aria-hidden="true">
+        📚
+    </div>
+</section>
+
+<section>
+    <div class="section-heading">
+        <h2>Explore QuizNest</h2>
+
+        <p>
+            Everything you need for smarter learning.
+        </p>
+    </div>
+
+    <div class="features">
+
+        <a
+            class="feature-card"
+            href="{{ url_for('ask_ai_page') }}"
+        >
+            <div class="feature-icon">🤖</div>
+
+            <h3>Ask AI</h3>
+
+            <p>
+                Get simple explanations for your study questions.
+            </p>
+
+            <span class="feature-action">
+                Ask a question →
+            </span>
+        </a>
+
+        <a
+            class="feature-card"
+            href="{{ url_for('generate_quiz_page') }}"
+        >
+            <div class="feature-icon">📝</div>
+
+            <h3>AI Quiz</h3>
+
+            <p>
+                Generate MCQs and practice any topic.
+            </p>
+
+            <span class="feature-action">
+                Create a quiz →
+            </span>
+        </a>
+
+        <a
+            class="feature-card"
+            href="{{ url_for('study_quiz_page') }}"
+        >
+            <div class="feature-icon">📚</div>
+
+            <h3>Study Material</h3>
+
+            <p>
+                Turn your notes and files into practice quizzes.
+            </p>
+
+            <span class="feature-action">
+                Upload material →
+            </span>
+        </a>
+
+        <a
+            class="feature-card"
+            href="{{ url_for('student_tests') }}"
+        >
+            <div class="feature-icon">👨‍🏫</div>
+
+            <h3>Teacher Tests</h3>
+
+            <p>
+                Attempt tests published by your teacher.
+            </p>
+
+            <span class="feature-action">
+                View tests →
+            </span>
+        </a>
+
+    </div>
+</section>
+
+{% else %}
+
+<!-- INNER PAGE HEADING -->
+
+<div class="page-heading">
+    <a
+        class="back-link"
+        href="{{ url_for('home') }}"
+    >
+        ← Back to Home
+    </a>
+
+    {% if page == "ask_ai" %}
+        <h1>🤖 Ask AI</h1>
+        <p>
+            Get simple explanations for your study questions.
+        </p>
+
+    {% elif page == "ai_quiz" %}
+        <h1>📝 AI Quiz Generator</h1>
+        <p>
+            Choose a topic and practice with AI-generated MCQs.
+        </p>
+
+    {% elif page == "material" %}
+        <h1>📚 Study Material Quiz</h1>
+        <p>
+            Generate practice questions from your files or notes.
+        </p>
+    {% endif %}
+</div>
+
+{% if page == "ask_ai" %}
+
+<!-- ASK AI PAGE -->
+
+<section class="card">
+    <div class="card-heading">
+        <div class="card-icon">🤖</div>
+
+        <div>
+            <h2>Ask AI</h2>
+            <p>Your personal study assistant</p>
+        </div>
+    </div>
+
+    <p class="muted">
+        Have a doubt? Ask any study-related question
+        and get a simple explanation.
+    </p>
+
+    <label for="question">
+        Your Question
+    </label>
+
+    <textarea
+        id="question"
+        maxlength="5000"
+        placeholder="Example: Explain Artificial Intelligence in simple words..."
+    ></textarea>
+
+    <button
+        class="primary-button"
+        id="askButton"
+        type="button"
+        onclick="askAI()"
+    >
+        ✨ Ask AI
+    </button>
+
+    <div
+        id="aiResult"
+        class="result hidden"
+        aria-live="polite"
+    ></div>
+</section>
+
+{% endif %}
+
+{% if page == "ai_quiz" %}
+
+<!-- AI QUIZ PAGE -->
+
+<section class="card">
+    <div class="card-heading">
+        <div class="card-icon">📝</div>
+
+        <div>
+            <h2>AI Quiz Generator</h2>
+            <p>Practice any topic with MCQs</p>
+        </div>
+    </div>
+
+    <p class="muted">
+        Choose a topic and let AI create a practice quiz for you.
+    </p>
+
+    <div class="field-group">
+        <label for="quizTopic">
+            Quiz Topic
+        </label>
+
+        <input
+            type="text"
+            id="quizTopic"
+            maxlength="200"
+            placeholder="Example: Python Programming"
+        >
+    </div>
+
+    <div class="field-group">
+        <label for="quizCount">
+            Number of Questions
+        </label>
+
+        <select id="quizCount">
+            <option value="5">5 Questions</option>
+            <option value="10">10 Questions</option>
+            <option value="15">15 Questions</option>
+            <option value="20">20 Questions</option>
+        </select>
+    </div>
+
+    <button
+        class="primary-button"
+        id="generateButton"
+        type="button"
+        onclick="generateQuiz()"
+    >
+        ✨ Generate Quiz
+    </button>
+
+    <p
+        id="quizStatus"
+        class="status"
+        aria-live="polite"
+    ></p>
+</section>
+
+{% endif %}
+
+{% if page == "material" %}
+
+<!-- STUDY MATERIAL PAGE -->
+
+<section class="card">
+    <div class="card-heading">
+        <div class="card-icon">📚</div>
+
+        <div>
+            <h2>Study Material Quiz</h2>
+            <p>Turn your notes into questions</p>
+        </div>
+    </div>
+
+    <p class="muted">
+        Upload your study material, paste your notes,
+        or use both to generate MCQs.
+    </p>
+
+    <div class="material-layout">
+
+        <div class="field-group">
+            <label for="materialFiles">
+                Upload Study Material
+            </label>
+
+            <input
+                type="file"
+                id="materialFiles"
+                accept=".pdf,.txt,.jpg,.jpeg,.png,.webp"
+                multiple
+            >
+
+            <p class="file-hint">
+                PDF, TXT, JPG, JPEG, PNG and WEBP.
+                Maximum 25 MB total and up to 10 images.
+            </p>
+
+            <div
+                id="selectedFiles"
+                class="file-info hidden"
+                aria-live="polite"
+            ></div>
+        </div>
+
+        <div class="field-group">
+            <label for="studyText">
+                Or Paste Your Notes
+            </label>
+
+            <textarea
+                id="studyText"
+                placeholder="Paste your study notes here..."
+            ></textarea>
+
+            <p class="file-hint">
+                Up to 30,000 characters of pasted notes.
+            </p>
+        </div>
+
+    </div>
+
+    <div class="field-group" style="max-width:240px">
+        <label for="materialCount">
+            Number of Questions
+        </label>
+
+        <select id="materialCount">
+            <option value="5">5 Questions</option>
+            <option value="10">10 Questions</option>
+            <option value="15">15 Questions</option>
+            <option value="20">20 Questions</option>
+        </select>
+    </div>
+
+    <button
+        class="primary-button"
+        id="materialButton"
+        type="button"
+        onclick="generateMaterialQuiz()"
+    >
+        ✨ Generate Quiz from Material
+    </button>
+
+    <p
+        id="materialStatus"
+        class="status"
+        aria-live="polite"
+    ></p>
+</section>
+
+{% endif %}
+
+{% if page in ["ai_quiz", "material"] %}
+
+<!-- SHARED QUIZ DISPLAY -->
+
+<section id="quizCard" class="card hidden">
+
+    <div class="quiz-header">
+        <h2 id="quizTitle">
+            Your Quiz
+        </h2>
+
+        <span id="questionNumber"></span>
+    </div>
+
+    <div class="progress-track">
+        <div
+            id="quizProgress"
+            class="progress-fill"
+            role="progressbar"
+            aria-label="Quiz progress"
+            aria-valuemin="0"
+            aria-valuemax="100"
+            aria-valuenow="0"
+        ></div>
+    </div>
+
+    <h3 id="questionText"></h3>
+
+    <div id="quizOptions"></div>
+
+    <div
+        id="quizFeedback"
+        class="feedback hidden"
+        aria-live="polite"
+    ></div>
+
+    <button
+        id="nextButton"
+        class="primary-button hidden"
+        type="button"
+        onclick="nextQuestion()"
+    >
+        Next Question →
+    </button>
+
+</section>
+
+<!-- SCORE DISPLAY -->
+
+<section id="scoreCard" class="card hidden">
+    <div class="score-content">
+        <div class="score-icon">🏆</div>
+
+        <h2>Quiz Completed!</h2>
+
+        <p class="muted">
+            Here's how you performed.
+        </p>
+
+        <p id="finalScore" class="score"></p>
+
+        <p id="finalPercentage"></p>
+
+        <button
+            class="primary-button secondary"
+            type="button"
+            onclick="restartQuiz()"
+        >
+            Try Another Quiz →
+        </button>
+    </div>
+</section>
+
+{% endif %}
+
+{% endif %}
+
+</main>
+
+<footer>
+    © QuizNest · Learn Smarter with AI
+</footer>
+
+<script>
+    // UPLOAD SETTINGS
+
+    const MAX_UPLOAD_SIZE = 25 * 1024 * 1024;
+    const MAX_IMAGES = 10;
+
+    const ALLOWED_EXTENSIONS = [
+        ".pdf", ".txt", ".jpg", ".jpeg", ".png", ".webp"
+    ];
+
+    const IMAGE_EXTENSIONS = [
+        ".jpg", ".jpeg", ".png", ".webp"
+    ];
+
+    const materialFilesInput =
+        document.getElementById("materialFiles");
+
+    if (materialFilesInput) {
+        materialFilesInput.addEventListener(
+            "change",
+            showSelectedFiles
+        );
+    }
+
+    function getExtension(filename) {
+        const index = filename.lastIndexOf(".");
+
+        return index === -1
+            ? ""
+            : filename.slice(index).toLowerCase();
+    }
+
+    function formatFileSize(bytes) {
+        if (bytes < 1024) {
+            return bytes + " B";
+        }
+
+        if (bytes < 1024 * 1024) {
+            return (bytes / 1024).toFixed(1) + " KB";
+        }
+
+        return (bytes / (1024 * 1024)).toFixed(2) + " MB";
+    }
+
+    function validateFiles(files) {
+        let totalSize = 0;
+        let imageCount = 0;
+
+        for (const file of files) {
+            totalSize += file.size;
+
+            const extension = getExtension(file.name);
+
+            if (!ALLOWED_EXTENSIONS.includes(extension)) {
+                return "Unsupported file: " + file.name;
+            }
+
+            if (IMAGE_EXTENSIONS.includes(extension)) {
+                imageCount++;
+            }
+        }
+
+        if (imageCount > MAX_IMAGES) {
+            return "Maximum 10 images allowed.";
+        }
+
+        if (totalSize > MAX_UPLOAD_SIZE) {
+            return "Maximum total upload size is 25 MB.";
+        }
+
+        return "";
+    }
+
+    function showSelectedFiles() {
+        const files =
+            document.getElementById("materialFiles").files;
+
+        const info =
+            document.getElementById("selectedFiles");
+
+        const status =
+            document.getElementById("materialStatus");
+
+        info.replaceChildren();
+
+        status.textContent = "";
+        status.classList.remove("error");
+
+        if (!files.length) {
+            info.classList.add("hidden");
+            return;
+        }
+
+        const error = validateFiles(files);
+
+        let totalSize = 0;
+        let imageCount = 0;
+
+        const list = document.createElement("ul");
+
+        for (const file of files) {
+            totalSize += file.size;
+
+            if (
+                IMAGE_EXTENSIONS.includes(
+                    getExtension(file.name)
+                )
+            ) {
+                imageCount++;
+            }
+
+            const item = document.createElement("li");
+
+            item.textContent =
+                file.name + " (" +
+                formatFileSize(file.size) + ")";
+
+            list.appendChild(item);
+        }
+
+        const summary = document.createElement("strong");
+
+        summary.textContent =
+            files.length + " file(s) selected · " +
+            imageCount + " image(s) · " +
+            formatFileSize(totalSize);
+
+        info.appendChild(summary);
+        info.appendChild(list);
+        info.classList.remove("hidden");
+
+        if (error) {
+            status.textContent = error;
+            status.classList.add("error");
+        }
+    }
+
+    // ASK AI
+
+    async function askAI() {
+        const question =
+            document.getElementById("question").value.trim();
+
+        const button =
+            document.getElementById("askButton");
+
+        const result =
+            document.getElementById("aiResult");
+
+        if (!question) {
+            alert("Please enter your question.");
+            return;
+        }
+
+        button.disabled = true;
+        button.textContent = "Thinking...";
+
+        result.classList.remove("hidden");
+        result.textContent = "AI is preparing your answer...";
+
+        try {
+            const response = await fetch("/ask", {
+                method: "POST",
+
+                headers: {
+                    "Content-Type": "application/json"
+                },
+
+                body: JSON.stringify({ question })
+            });
+
+            const data = await response.json();
+
+            if (!response.ok) {
+                result.textContent =
+                    data.error || "Unable to get an answer.";
+
+                return;
+            }
+
+            const model = document.createElement("div");
+
+            model.className = "model-label";
+            model.textContent =
+                "Answered by " + (data.model || "AI");
+
+            const answer = document.createElement("div");
+
+            answer.className = "answer-text";
+            answer.textContent = data.answer || "";
+
+            result.replaceChildren(model, answer);
+
+        } catch (error) {
+            result.textContent =
+                "Unable to connect to the server.";
+
+        } finally {
+            button.disabled = false;
+            button.textContent = "✨ Ask AI";
+        }
+    }
+
+    // SHARED QUIZ STATE
+
+    let currentQuiz = [];
+    let currentIndex = 0;
+    let score = 0;
+    let answered = false;
+    let quizSource = "";
+
+    function resetQuizDisplay() {
+        currentQuiz = [];
+        currentIndex = 0;
+        score = 0;
+        answered = false;
+
+        document.getElementById("quizCard")
+            .classList.add("hidden");
+
+        document.getElementById("scoreCard")
+            .classList.add("hidden");
+
+        const progress =
+            document.getElementById("quizProgress");
+
+        progress.style.width = "0%";
+        progress.setAttribute("aria-valuenow", "0");
+    }
+
+    // AI QUIZ GENERATOR
+
+    async function generateQuiz() {
+        const topic =
+            document.getElementById("quizTopic").value.trim();
+
+        const count = Number(
+            document.getElementById("quizCount").value
+        );
+
+        const button =
+            document.getElementById("generateButton");
+
+        const status =
+            document.getElementById("quizStatus");
+
+        status.classList.remove("error");
+
+        if (!topic) {
+            alert("Please enter a quiz topic.");
+            return;
+        }
+
+        button.disabled = true;
+        button.textContent = "Generating...";
+
+        status.textContent =
+            "AI is generating your questions...";
+
+        resetQuizDisplay();
+
+        try {
+            const response = await fetch("/quiz", {
+                method: "POST",
+
+                headers: {
+                    "Content-Type": "application/json"
+                },
+
+                body: JSON.stringify({ topic, count })
+            });
+
+            const data = await response.json();
+
+            if (!response.ok) {
+                status.textContent =
+                    data.error || "Unable to generate quiz.";
+
+                status.classList.add("error");
+                return;
+            }
+
+            startQuiz(
+                data.questions,
+                data.topic || topic,
+                "normal"
+            );
+
+            status.textContent =
+                "Quiz generated using " +
+                (data.model || "AI") + "!";
+
+        } catch (error) {
+            status.textContent =
+                "Unable to generate the quiz. Please try again.";
+
+            status.classList.add("error");
+
+        } finally {
+            button.disabled = false;
+            button.textContent = "✨ Generate Quiz";
+        }
+    }
+
+    // STUDY MATERIAL QUIZ
+
+    async function generateMaterialQuiz() {
+        const files =
+            document.getElementById("materialFiles").files;
+
+        const studyText =
+            document.getElementById("studyText").value.trim();
+
+        const count =
+            document.getElementById("materialCount").value;
+
+        const button =
+            document.getElementById("materialButton");
+
+        const status =
+            document.getElementById("materialStatus");
+
+        status.classList.remove("error");
+
+        if (files.length === 0 && !studyText) {
+            status.textContent =
+                "Please upload a file or paste your notes.";
+
+            status.classList.add("error");
+            return;
+        }
+
+        const fileError = validateFiles(files);
+
+        if (fileError) {
+            status.textContent = fileError;
+            status.classList.add("error");
+            return;
+        }
+
+        if (studyText.length > 30000) {
+            status.textContent =
+                "Pasted notes are too long. Maximum: 30,000 characters.";
+
+            status.classList.add("error");
+            return;
+        }
+
+        const formData = new FormData();
+
+        formData.append("study_text", studyText);
+        formData.append("count", count);
+
+        for (const file of files) {
+            formData.append("files", file);
+        }
+
+        button.disabled = true;
+        button.textContent = "Generating...";
+
+        status.textContent =
+            "Reading your material and generating MCQs...";
+
+        resetQuizDisplay();
+
+        try {
+            const response = await fetch("/material-quiz", {
+                method: "POST",
+                body: formData
+            });
+
+            const data = await response.json();
+
+            if (!response.ok) {
+                status.textContent =
+                    data.error ||
+                    "Unable to generate quiz from material.";
+
+                status.classList.add("error");
+                return;
+            }
+
+            startQuiz(
+                data.questions,
+                "Study Material",
+                "material"
+            );
+
+            status.textContent =
+                "Quiz generated using " +
+                (data.model || "AI") + "!";
+
+        } catch (error) {
+            status.textContent =
+                "Unable to generate the quiz. Please try again.";
+
+            status.classList.add("error");
+
+        } finally {
+            button.disabled = false;
+
+            button.textContent =
+                "✨ Generate Quiz from Material";
+        }
+    }
+
+    // START QUIZ
+
+    function startQuiz(questions, title, source) {
+        if (!Array.isArray(questions) || !questions.length) {
+            throw new Error("No questions received.");
+        }
+
+        currentQuiz = questions;
+        currentIndex = 0;
+        score = 0;
+        answered = false;
+        quizSource = source;
+
+        document.getElementById("quizTitle")
+            .textContent = title + " Quiz";
+
+        document.getElementById("quizCard")
+            .classList.remove("hidden");
+
+        document.getElementById("scoreCard")
+            .classList.add("hidden");
+
+        showQuestion();
+
+        document.getElementById("quizCard")
+            .scrollIntoView({
+                behavior: "smooth",
+                block: "start"
+            });
+    }
+
+    // SHOW QUESTION
+
+    function showQuestion() {
+        answered = false;
+
+        const question = currentQuiz[currentIndex];
+        const letters = ["A", "B", "C", "D"];
+
+        const container =
+            document.getElementById("quizOptions");
+
+        document.getElementById("questionNumber")
+            .textContent =
+                "Question " + (currentIndex + 1) +
+                " of " + currentQuiz.length;
+
+        document.getElementById("questionText")
+            .textContent = question.question;
+
+        const percentage =
+            ((currentIndex + 1) / currentQuiz.length) * 100;
+
+        const progress =
+            document.getElementById("quizProgress");
+
+        progress.style.width = percentage + "%";
+
+        progress.setAttribute(
+            "aria-valuenow",
+            String(Math.round(percentage))
+        );
+
+        container.replaceChildren();
+
+        question.options.forEach((option, index) => {
+            const button = document.createElement("button");
+
+            button.type = "button";
+            button.className = "option";
+
+            button.textContent =
+                letters[index] + ". " + option;
+
+            button.dataset.letter = letters[index];
+
+            button.addEventListener("click", () => {
+                selectAnswer(letters[index]);
+            });
+
+            container.appendChild(button);
+        });
+
+        document.getElementById("quizFeedback")
+            .classList.add("hidden");
+
+        document.getElementById("nextButton")
+            .classList.add("hidden");
+    }
+
+    // CHECK ANSWER
+
+    function selectAnswer(selectedLetter) {
+        if (answered) {
+            return;
+        }
+
+        answered = true;
+
+        const question = currentQuiz[currentIndex];
+        const correctLetter = question.correct_answer;
+
+        const isCorrect =
+            selectedLetter === correctLetter;
+
+        if (isCorrect) {
+            score++;
+        }
+
+        document.querySelectorAll("#quizOptions .option")
+            .forEach(button => {
+                button.disabled = true;
+
+                if (button.dataset.letter === correctLetter) {
+                    button.classList.add("correct");
+
+                } else if (
+                    button.dataset.letter === selectedLetter
+                ) {
+                    button.classList.add("wrong");
+                }
+            });
+
+        const correctIndex =
+            ["A", "B", "C", "D"].indexOf(correctLetter);
+
+        const correctText =
+            question.options[correctIndex] || "";
+
+        const feedback =
+            document.getElementById("quizFeedback");
+
+        feedback.textContent =
+            (isCorrect ? "✅ Correct!" : "❌ Incorrect.") +
+            "\nCorrect answer: " +
+            correctLetter + ". " + correctText +
+            (
+                question.explanation
+                    ? "\nExplanation: " + question.explanation
+                    : ""
+            );
+
+        feedback.classList.remove("hidden");
+
+        const nextButton =
+            document.getElementById("nextButton");
+
+        nextButton.textContent =
+            currentIndex === currentQuiz.length - 1
+                ? "View Final Score →"
+                : "Next Question →";
+
+        nextButton.classList.remove("hidden");
+    }
+
+    // NEXT QUESTION
+
+    function nextQuestion() {
+        if (!answered) {
+            return;
+        }
+
+        currentIndex++;
+
+        if (currentIndex < currentQuiz.length) {
+            showQuestion();
+        } else {
+            showFinalScore();
+        }
+    }
+
+    // FINAL SCORE
+
+    function showFinalScore() {
+        document.getElementById("quizCard")
+            .classList.add("hidden");
+
+        const percentage =
+            (score / currentQuiz.length) * 100;
+
+        document.getElementById("finalScore")
+            .textContent =
+                score + " / " + currentQuiz.length;
+
+        document.getElementById("finalPercentage")
+            .textContent =
+                "Percentage: " + percentage.toFixed(2) + "%";
+
+        const scoreCard =
+            document.getElementById("scoreCard");
+
+        scoreCard.classList.remove("hidden");
+
+        scoreCard.scrollIntoView({
+            behavior: "smooth",
+            block: "start"
+        });
+    }
+
+    // RESTART QUIZ
+
+    function restartQuiz() {
+        resetQuizDisplay();
+
+        if (quizSource === "material") {
+            document.getElementById("materialStatus")
+                .textContent = "";
+
+            document.getElementById("studyText").focus();
+
+        } else {
+            document.getElementById("quizStatus")
+                .textContent = "";
+
+            document.getElementById("quizTopic").focus();
+        }
+
+        window.scrollTo({
+            top: 0,
+            behavior: "smooth"
+        });
+    }
+</script>
+<script>
+    if ("serviceWorker" in navigator) {
+        window.addEventListener("load", () => {
+            navigator.serviceWorker.register(
+                "{{ url_for('static', filename='service-worker.js') }}"
+            );
+        });
+    }
+</script>
+
+</body>
+</html>
