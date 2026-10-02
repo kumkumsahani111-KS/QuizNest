@@ -1696,9 +1696,10 @@ def file_too_large(error):
 # CREATE DATABASE AND START SERVER
 # ---------------------------------
 
-if __name__ == "__main__":
-    with app.app_context():
-        db.create_all()
-        print("QuizNest database is ready!")
+with app.app_context():
+    db.create_all()
+    print("QuizNest database is ready!")
 
+
+if __name__ == "__main__":
     app.run(debug=True)
