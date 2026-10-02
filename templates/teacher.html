@@ -1,2426 +1,2438 @@
-
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>QuizNest | Teacher Portal</title>
-
-    <style>
-        :root {
-            /* QuizNest official colours */
-            --navy: #25245B;
-            --navy-light: #353477;
-            --purple: #5145A5;
-            --purple-dark: #40358B;
-            --white: #FFFFFF;
-
-            --background: #F7F8FC;
-            --text: #25245B;
-            --muted: #69738A;
-            --border: #E2E6F0;
-        }
-
-        * {
-            box-sizing: border-box;
-        }
-
-        body {
-            margin: 0;
-            font-family: Arial, Helvetica, sans-serif;
-            background: var(--background);
-            color: var(--text);
-        }
-
-        button,
-        input,
-        select,
-        textarea {
-            font: inherit;
-        }
-
-        button,
-        .button {
-            display: inline-flex;
-            align-items: center;
-            justify-content: center;
-            gap: 8px;
-            min-height: 42px;
-            padding: 10px 17px;
-            border: 1px solid transparent;
-            border-radius: 8px;
-            background: var(--purple);
-            color: var(--white);
-            font-size: 14px;
-            font-weight: 600;
-            text-decoration: none;
-            cursor: pointer;
-            transition: background .2s, border-color .2s;
-        }
-
-        button:hover:not(:disabled),
-        .button:hover {
-            background: var(--purple-dark);
-        }
-
-        button:disabled {
-            opacity: .55;
-            cursor: not-allowed;
-        }
-
-        .secondary {
-            background: var(--white);
-            color: var(--purple);
-            border-color: #CFC9EB;
-        }
-
-        .secondary:hover:not(:disabled) {
-            background: #F3F0FC;
-        }
-
-        .danger {
-            background: #DC2626;
-            color: white;
-        }
-
-        .danger:hover:not(:disabled) {
-            background: #B91C1C;
-        }
-
-        .hidden {
-            display: none !important;
-        }
-
-        .muted {
-            color: var(--muted);
-            line-height: 1.6;
-        }
-
-        .small {
-            font-size: 13px;
-        }
-
-        label {
-            display: block;
-            margin: 16px 0 8px;
-            font-size: 14px;
-            font-weight: 600;
-        }
-
-        input,
-        textarea,
-        select {
-            width: 100%;
-            min-height: 45px;
-            padding: 11px 13px;
-            border: 1px solid #D6DDEB;
-            border-radius: 8px;
-            background: var(--white);
-            color: var(--text);
-            font-size: 15px;
-        }
-
-        input:focus,
-        textarea:focus,
-        select:focus {
-            outline: 2px solid #CFC9EB;
-            border-color: var(--purple);
-        }
-
-        textarea {
-            min-height: 110px;
-            resize: vertical;
-        }
-
-        input[type="file"] {
-            padding: 9px;
-        }
-
-        .card {
-            margin-bottom: 24px;
-            padding: 28px;
-            border: 1px solid #EDF0F7;
-            border-radius: 13px;
-            background: var(--white);
-            box-shadow: 0 5px 20px rgba(37, 36, 91, .035);
-        }
-
-        .card h2 {
-            margin: 0;
-            font-size: 22px;
-        }
-
-        .card-description {
-            margin: 9px 0 23px;
-            color: var(--muted);
-            line-height: 1.6;
-            font-size: 14px;
-        }
-
-        .section-title,
-        .actions,
-        .top-actions {
-            display: flex;
-            align-items: center;
-            justify-content: space-between;
-            flex-wrap: wrap;
-            gap: 12px;
-        }
-
-        .actions {
-            justify-content: flex-start;
-            margin-top: 20px;
-        }
-
-        .two-columns,
-        .options-grid {
-            display: grid;
-            grid-template-columns: repeat(2, minmax(0, 1fr));
-            gap: 20px;
-        }
-
-        .message {
-            margin-top: 18px;
-            padding: 13px 15px;
-            border-radius: 8px;
-            line-height: 1.5;
-            font-size: 14px;
-        }
-
-        .success {
-            background: #ECFDF3;
-            color: #166534;
-        }
-
-        .error {
-            background: #FEF2F2;
-            color: #B91C1C;
-        }
-
-        .info {
-            background: #F0EDFC;
-            color: #40358B;
-        }
-
-        .badge {
-            display: inline-block;
-            padding: 5px 11px;
-            border-radius: 20px;
-            font-size: 12px;
-            font-weight: 600;
-        }
-
-        .published {
-            background: #E9F8EF;
-            color: #166534;
-        }
-
-        .draft {
-            background: #F1F2F7;
-            color: #555E72;
-        }
-
-        /* QUIZNEST LOGO */
-
-        .brand {
-            display: flex;
-            align-items: center;
-            gap: 12px;
-            padding: 0 10px 42px;
-        }
-
-        .quiznest-logo {
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            width: 48px;
-            height: 48px;
-            flex-shrink: 0;
-            border-radius: 13px;
-            background: #5145A5;
-        }
-
-        .quiznest-logo span {
-            color: #FFFFFF;
-            font-family: Arial, Helvetica, sans-serif;
-            font-size: 32px;
-            font-weight: 800;
-            line-height: 1;
-        }
-
-        .brand-text h1 {
-            margin: 0;
-            color: #FFFFFF;
-            font-size: 23px;
-            font-weight: 700;
-            letter-spacing: -.6px;
-        }
-
-        .brand-text h1 span {
-            color: #C5BFFF;
-        }
-
-        .brand-text p {
-            margin: 5px 0 0;
-            color: #D1CFF1;
-            font-size: 12px;
-        }
-
-        /* LOGIN PAGE */
-
-        .login-header {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            gap: 15px;
-            padding: 23px 7%;
-            background: var(--navy);
-            color: white;
-        }
-
-        .login-header .brand {
-            padding: 0;
-        }
-
-        .login-header a {
-            color: white;
-            text-decoration: none;
-            font-size: 14px;
-        }
-
-        .login-header a:hover {
-            text-decoration: underline;
-        }
-
-        .login-card {
-            width: min(440px, calc(100% - 32px));
-            margin: 75px auto;
-        }
-
-        .full-width {
-            width: 100%;
-            margin-top: 24px;
-        }
-
-        /* DASHBOARD LAYOUT */
-
-        .dashboard-layout {
-            display: flex;
-            min-height: 100vh;
-        }
-
-        .sidebar {
-            width: 240px;
-            flex-shrink: 0;
-            position: sticky;
-            top: 0;
-            height: 100vh;
-            overflow-y: auto;
-            padding: 30px 15px;
-            background: var(--navy);
-            color: white;
-        }
-
-        .side-nav {
-            display: flex;
-            flex-direction: column;
-            gap: 7px;
-        }
-
-        .side-link {
-            display: flex;
-            align-items: center;
-            gap: 13px;
-            width: 100%;
-            padding: 14px;
-            border-radius: 9px;
-            color: #D1CFF1;
-            font-size: 14px;
-            font-weight: 600;
-            text-decoration: none;
-            transition: background .2s;
-        }
-
-        .side-link:hover,
-        .side-link.active {
-            background: var(--purple);
-            color: #FFFFFF;
-        }
-
-        .side-icon {
-            display: inline-grid;
-            place-items: center;
-            width: 21px;
-            flex-shrink: 0;
-            font-size: 18px;
-        }
-
-        .dashboard-area {
-            flex: 1;
-            min-width: 0;
-        }
-
-        .topbar {
-            display: flex;
-            align-items: center;
-            justify-content: flex-end;
-            gap: 25px;
-            min-height: 75px;
-            padding: 12px 36px;
-            border-bottom: 1px solid var(--border);
-            background: white;
-        }
-
-        .topbar a {
-            color: #485574;
-            text-decoration: none;
-            font-size: 14px;
-        }
-
-        .topbar a:hover {
-            color: var(--purple);
-        }
-
-        .topbar-divider {
-            width: 1px;
-            height: 27px;
-            background: var(--border);
-        }
-
-        .teacher-account {
-            display: flex;
-            align-items: center;
-            gap: 10px;
-        }
-
-        .avatar {
-            display: grid;
-            place-items: center;
-            width: 35px;
-            height: 35px;
-            border-radius: 50%;
-            background: var(--navy);
-            color: white;
-            font-weight: bold;
-        }
-
-        .logout-button {
-            min-height: 35px;
-            padding: 7px 12px;
-            border-color: var(--border);
-            background: transparent;
-            color: #485574;
-        }
-
-        .logout-button:hover:not(:disabled) {
-            background: #F4F5FB;
-        }
-
-        .dashboard-content {
-            max-width: 1450px;
-            margin: 0 auto;
-            padding: 34px 36px 60px;
-        }
-
-        .page-heading {
-            display: flex;
-            align-items: center;
-            gap: 17px;
-            margin-bottom: 28px;
-        }
-
-        .heading-icon {
-            display: grid;
-            place-items: center;
-            width: 59px;
-            height: 59px;
-            flex-shrink: 0;
-            border-radius: 14px;
-            background: #EEEAFB;
-            color: var(--purple);
-            font-size: 26px;
-        }
-
-        .page-heading h2 {
-            margin: 0 0 8px;
-            font-size: 27px;
-            letter-spacing: -.6px;
-        }
-
-        .page-heading p {
-            margin: 0;
-            color: var(--muted);
-            font-size: 14px;
-            line-height: 1.5;
-        }
-
-        .stats {
-            display: grid;
-            grid-template-columns: repeat(3, minmax(0, 1fr));
-            gap: 18px;
-            margin-bottom: 28px;
-        }
-
-        .stat {
-            display: flex;
-            align-items: center;
-            gap: 17px;
-            min-height: 112px;
-            padding: 22px;
-            border: 1px solid var(--border);
-            border-radius: 12px;
-            background: white;
-        }
-
-        .stat-icon {
-            display: grid;
-            place-items: center;
-            width: 48px;
-            height: 48px;
-            flex-shrink: 0;
-            border-radius: 12px;
-            background: #EEEAFB;
-            color: var(--purple);
-            font-size: 21px;
-        }
-
-        .stat-label {
-            color: var(--muted);
-            font-size: 14px;
-        }
-
-        .stat strong {
-            display: block;
-            margin-top: 7px;
-            color: var(--text);
-            font-size: 28px;
-        }
-
-        .create-heading {
-            display: flex;
-            align-items: flex-start;
-            gap: 15px;
-            margin-bottom: 25px;
-        }
-
-        .create-heading .heading-icon {
-            width: 44px;
-            height: 44px;
-            border-radius: 50%;
-            background: var(--purple);
-            color: white;
-            font-size: 24px;
-        }
-
-        .create-heading h2 {
-            margin: 2px 0 8px;
-        }
-
-        .create-heading p {
-            margin: 0;
-            color: var(--muted);
-            font-size: 14px;
-            line-height: 1.6;
-        }
-
-        .create-heading .new-test {
-            margin-left: auto;
-            flex-shrink: 0;
-        }
-
-        .file-hint {
-            margin: 7px 0 0;
-            color: var(--muted);
-            font-size: 12px;
-            line-height: 1.5;
-        }
-
-        .quiz-item,
-        .question-card {
-            margin-top: 16px;
-            padding: 20px;
-            border: 1px solid var(--border);
-            border-radius: 10px;
-            background: white;
-        }
-
-        .quiz-item h3 {
-            margin: 0 0 8px;
-        }
-
-        .question-card {
-            background: #FCFBFF;
-        }
-
-        .question-heading {
-            display: flex;
-            align-items: center;
-            justify-content: space-between;
-            flex-wrap: wrap;
-            gap: 12px;
-        }
-
-        .question-heading h3 {
-            margin: 0;
-        }
-
-        .empty {
-            margin-top: 18px;
-            padding: 32px 15px;
-            border: 1px dashed #CFD5E4;
-            border-radius: 10px;
-            text-align: center;
-        }
-
-        .empty h3 {
-            margin-top: 0;
-        }
-
-        .table-wrap {
-            overflow-x: auto;
-        }
-
-        table {
-            width: 100%;
-            margin-top: 15px;
-            border-collapse: collapse;
-            font-size: 14px;
-        }
-
-        th,
-        td {
-            padding: 14px;
-            border-bottom: 1px solid var(--border);
-            text-align: left;
-            white-space: nowrap;
-        }
-
-        th {
-            background: #F7F8FC;
-            color: #46516A;
-            font-weight: 600;
-        }
-
-        .quick-links {
-            display: grid;
-            grid-template-columns: repeat(3, minmax(0, 1fr));
-            gap: 18px;
-        }
-
-        .quick-link {
-            display: block;
-            padding: 24px;
-            border: 1px solid var(--border);
-            border-radius: 12px;
-            background: white;
-            color: var(--text);
-            text-decoration: none;
-            transition: border-color .2s, transform .2s;
-        }
-
-        .quick-link:hover {
-            border-color: var(--purple);
-            transform: translateY(-2px);
-        }
-
-        .quick-link-icon {
-            display: grid;
-            place-items: center;
-            width: 45px;
-            height: 45px;
-            margin-bottom: 17px;
-            border-radius: 10px;
-            background: #EEEAFB;
-            color: var(--purple);
-            font-size: 23px;
-        }
-
-        .quick-link h3 {
-            margin: 0 0 8px;
-            font-size: 17px;
-        }
-
-        .quick-link p {
-            margin: 0;
-            color: var(--muted);
-            font-size: 13px;
-            line-height: 1.6;
-        }
-
-        /* RESPONSIVE */
-
-        @media (max-width: 1000px) {
-            .sidebar {
-                width: 205px;
-            }
-
-            .dashboard-content {
-                padding: 28px 22px 50px;
-            }
-
-            .topbar {
-                padding: 12px 22px;
-            }
-
-            .quick-links {
-                grid-template-columns: 1fr;
-            }
-        }
-
-        @media (max-width: 760px) {
-            .dashboard-layout {
-                display: block;
-            }
-
-            .sidebar {
-                width: 100%;
-                height: auto;
-                position: static;
-                overflow: visible;
-                padding: 15px;
-            }
-
-            .brand {
-                padding: 0 4px 17px;
-            }
-
-            .side-nav {
-                flex-direction: row;
-                overflow-x: auto;
-            }
-
-            .side-link {
-                width: auto;
-                padding: 11px;
-                white-space: nowrap;
-            }
-
-            .topbar {
-                min-height: 65px;
-                padding: 12px 17px;
-                flex-wrap: wrap;
-                gap: 12px;
-            }
-
-            .dashboard-content {
-                padding: 24px 15px 40px;
-            }
-
-            .stats {
-                grid-template-columns: 1fr;
-                gap: 12px;
-            }
-
-            .stat {
-                min-height: 90px;
-                padding: 16px;
-            }
-
-            .two-columns,
-            .options-grid {
-                grid-template-columns: 1fr;
-                gap: 0;
-            }
-
-            .card {
-                padding: 20px;
-            }
-
-            .page-heading h2 {
-                font-size: 23px;
-            }
-
-            .create-heading {
-                flex-wrap: wrap;
-            }
-
-            .create-heading .new-test {
-                margin-left: 0;
-            }
-        }
-    </style>
-</head>
-
-<body>
-
-{% if page == "login" %}
-
-    <!-- TEACHER LOGIN -->
-
-    <header class="login-header">
-        <div class="brand">
-            <div class="quiznest-logo" aria-hidden="true">
-                <span>Q</span>
-            </div>
-
-            <div class="brand-text">
-                <h1>Quiz<span>Nest</span></h1>
-                <p>Teacher Portal</p>
-            </div>
-        </div>
-
-        <a href="{{ url_for('home') }}">
-            ← Student Home
-        </a>
-    </header>
-
-    <main>
-        <section class="card login-card">
-            <h2>Teacher Login</h2>
-
-            <p class="muted">
-                Sign in to access your teacher dashboard.
-            </p>
-
-            {% if error %}
-            <div class="message error" role="alert">
-                {{ error }}
-            </div>
-            {% endif %}
-
-            <form
-                action="{{ url_for('teacher_login') }}"
-                method="POST"
-            >
-                <label for="username">
-                    Username
-                </label>
-
-                <input
-                    type="text"
-                    id="username"
-                    name="username"
-                    placeholder="Enter username"
-                    autocomplete="username"
-                    required
-                >
-
-                <label for="password">
-                    Password
-                </label>
-
-                <input
-                    type="password"
-                    id="password"
-                    name="password"
-                    placeholder="Enter password"
-                    autocomplete="current-password"
-                    required
-                >
-
-                <button type="submit" class="full-width">
-                    Login
-                </button>
-            </form>
-        </section>
-    </main>
-
-{% else %}
-
-    <!-- TEACHER PORTAL -->
-
-    <div class="dashboard-layout">
-
-        <!-- LEFT SIDEBAR -->
-
-        <aside class="sidebar">
-
-            <div class="brand">
-                <div class="quiznest-logo" aria-hidden="true">
-                    <span>Q</span>
-                </div>
-
-                <div class="brand-text">
-                    <h1>Quiz<span>Nest</span></h1>
-                    <p>Learn Smarter with AI</p>
-                </div>
-            </div>
-
-            <nav
-                class="side-nav"
-                aria-label="Teacher navigation"
-            >
+<!DOCTYPE html>  
+<html lang="en">  
+<head>  
+    <meta charset="UTF-8">  
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">  
+    <title>QuizNest | Teacher Portal</title>  
+  
+    <style>  
+        :root {  
+            /* QuizNest official colours */  
+            --navy: #25245B;  
+            --navy-light: #353477;  
+            --purple: #5145A5;  
+            --purple-dark: #40358B;  
+            --white: #FFFFFF;  
+  
+            --background: #F7F8FC;  
+            --text: #25245B;  
+            --muted: #69738A;  
+            --border: #E2E6F0;  
+        }  
+  
+        * {  
+            box-sizing: border-box;  
+        }  
+  
+        body {  
+            margin: 0;  
+            font-family: Arial, Helvetica, sans-serif;  
+            background: var(--background);  
+            color: var(--text);  
+        }  
+  
+        button,  
+        input,  
+        select,  
+        textarea {  
+            font: inherit;  
+        }  
+  
+        button,  
+        .button {  
+            display: inline-flex;  
+            align-items: center;  
+            justify-content: center;  
+            gap: 8px;  
+            min-height: 42px;  
+            padding: 10px 17px;  
+            border: 1px solid transparent;  
+            border-radius: 8px;  
+            background: var(--purple);  
+            color: var(--white);  
+            font-size: 14px;  
+            font-weight: 600;  
+            text-decoration: none;  
+            cursor: pointer;  
+            transition: background .2s, border-color .2s;  
+        }  
+  
+        button:hover:not(:disabled),  
+        .button:hover {  
+            background: var(--purple-dark);  
+        }  
+  
+        button:disabled {  
+            opacity: .55;  
+            cursor: not-allowed;  
+        }  
+  
+        .secondary {  
+            background: var(--white);  
+            color: var(--purple);  
+            border-color: #CFC9EB;  
+        }  
+  
+        .secondary:hover:not(:disabled) {  
+            background: #F3F0FC;  
+        }  
+  
+        .danger {  
+            background: #DC2626;  
+            color: white;  
+        }  
+  
+        .danger:hover:not(:disabled) {  
+            background: #B91C1C;  
+        }  
+  
+        .hidden {  
+            display: none !important;  
+        }  
+  
+        .muted {  
+            color: var(--muted);  
+            line-height: 1.6;  
+        }  
+  
+        .small {  
+            font-size: 13px;  
+        }  
+  
+        label {  
+            display: block;  
+            margin: 16px 0 8px;  
+            font-size: 14px;  
+            font-weight: 600;  
+        }  
+  
+        input,  
+        textarea,  
+        select {  
+            width: 100%;  
+            min-height: 45px;  
+            padding: 11px 13px;  
+            border: 1px solid #D6DDEB;  
+            border-radius: 8px;  
+            background: var(--white);  
+            color: var(--text);  
+            font-size: 15px;  
+        }  
+  
+        input:focus,  
+        textarea:focus,  
+        select:focus {  
+            outline: 2px solid #CFC9EB;  
+            border-color: var(--purple);  
+        }  
+  
+        textarea {  
+            min-height: 110px;  
+            resize: vertical;  
+        }  
+  
+        input[type="file"] {  
+            padding: 9px;  
+        }  
+  
+        .card {  
+            margin-bottom: 24px;  
+            padding: 28px;  
+            border: 1px solid #EDF0F7;  
+            border-radius: 13px;  
+            background: var(--white);  
+            box-shadow: 0 5px 20px rgba(37, 36, 91, .035);  
+        }  
+  
+        .card h2 {  
+            margin: 0;  
+            font-size: 22px;  
+        }  
+  
+        .card-description {  
+            margin: 9px 0 23px;  
+            color: var(--muted);  
+            line-height: 1.6;  
+            font-size: 14px;  
+        }  
+  
+        .section-title,  
+        .actions,  
+        .top-actions {  
+            display: flex;  
+            align-items: center;  
+            justify-content: space-between;  
+            flex-wrap: wrap;  
+            gap: 12px;  
+        }  
+  
+        .actions {  
+            justify-content: flex-start;  
+            margin-top: 20px;  
+        }  
+  
+        .two-columns,  
+        .options-grid {  
+            display: grid;  
+            grid-template-columns: repeat(2, minmax(0, 1fr));  
+            gap: 20px;  
+        }  
+  
+        .message {  
+            margin-top: 18px;  
+            padding: 13px 15px;  
+            border-radius: 8px;  
+            line-height: 1.5;  
+            font-size: 14px;  
+        }  
+  
+        .success {  
+            background: #ECFDF3;  
+            color: #166534;  
+        }  
+  
+        .error {  
+            background: #FEF2F2;  
+            color: #B91C1C;  
+        }  
+  
+        .info {  
+            background: #F0EDFC;  
+            color: #40358B;  
+        }  
+  
+        .badge {  
+            display: inline-block;  
+            padding: 5px 11px;  
+            border-radius: 20px;  
+            font-size: 12px;  
+            font-weight: 600;  
+        }  
+  
+        .published {  
+            background: #E9F8EF;  
+            color: #166534;  
+        }  
+  
+        .draft {  
+            background: #F1F2F7;  
+            color: #555E72;  
+        }  
+  
+        /* QUIZNEST LOGO */  
+  
+        .brand {  
+            display: flex;  
+            align-items: center;  
+            gap: 12px;  
+            padding: 0 10px 42px;  
+        }  
+  
+        .quiznest-logo {  
+            display: flex;  
+            align-items: center;  
+            justify-content: center;  
+            width: 48px;  
+            height: 48px;  
+            flex-shrink: 0;  
+            border-radius: 13px;  
+            background: #5145A5;  
+        }  
+  
+        .quiznest-logo span {  
+            color: #FFFFFF;  
+            font-family: Arial, Helvetica, sans-serif;  
+            font-size: 32px;  
+            font-weight: 800;  
+            line-height: 1;  
+        }  
+  
+        .brand-text h1 {  
+            margin: 0;  
+            color: #FFFFFF;  
+            font-size: 23px;  
+            font-weight: 700;  
+            letter-spacing: -.6px;  
+        }  
+  
+        .brand-text h1 span {  
+            color: #C5BFFF;  
+        }  
+  
+        .brand-text p {  
+            margin: 5px 0 0;  
+            color: #D1CFF1;  
+            font-size: 12px;  
+        }  
+  
+        /* LOGIN PAGE */  
+  
+        .login-header {  
+            display: flex;  
+            justify-content: space-between;  
+            align-items: center;  
+            gap: 15px;  
+            padding: 23px 7%;  
+            background: var(--navy);  
+            color: white;  
+        }  
+  
+        .login-header .brand {  
+            padding: 0;  
+        }  
+  
+        .login-header a {  
+            color: white;  
+            text-decoration: none;  
+            font-size: 14px;  
+        }  
+  
+        .login-header a:hover {  
+            text-decoration: underline;  
+        }  
+  
+        .login-card {  
+            width: min(440px, calc(100% - 32px));  
+            margin: 75px auto;  
+        }  
+  
+        .full-width {  
+            width: 100%;  
+            margin-top: 24px;  
+        }  
+  
+        /* DASHBOARD LAYOUT */  
+  
+        .dashboard-layout {  
+            display: flex;  
+            min-height: 100vh;  
+        }  
+  
+        .sidebar {  
+            width: 240px;  
+            flex-shrink: 0;  
+            position: sticky;  
+            top: 0;  
+            height: 100vh;  
+            overflow-y: auto;  
+            padding: 30px 15px;  
+            background: var(--navy);  
+            color: white;  
+        }  
+  
+        .side-nav {  
+            display: flex;  
+            flex-direction: column;  
+            gap: 7px;  
+        }  
+  
+        .side-link {  
+            display: flex;  
+            align-items: center;  
+            gap: 13px;  
+            width: 100%;  
+            padding: 14px;  
+            border-radius: 9px;  
+            color: #D1CFF1;  
+            font-size: 14px;  
+            font-weight: 600;  
+            text-decoration: none;  
+            transition: background .2s;  
+        }  
+  
+        .side-link:hover,  
+        .side-link.active {  
+            background: var(--purple);  
+            color: #FFFFFF;  
+        }  
+  
+        .side-icon {  
+            display: inline-grid;  
+            place-items: center;  
+            width: 21px;  
+            flex-shrink: 0;  
+            font-size: 18px;  
+        }  
+  
+        .dashboard-area {  
+            flex: 1;  
+            min-width: 0;  
+        }  
+  
+        .topbar {  
+            display: flex;  
+            align-items: center;  
+            justify-content: flex-end;  
+            gap: 25px;  
+            min-height: 75px;  
+            padding: 12px 36px;  
+            border-bottom: 1px solid var(--border);  
+            background: white;  
+        }  
+  
+        .topbar a {  
+            color: #485574;  
+            text-decoration: none;  
+            font-size: 14px;  
+        }  
+  
+        .topbar a:hover {  
+            color: var(--purple);  
+        }  
+  
+        .topbar-divider {  
+            width: 1px;  
+            height: 27px;  
+            background: var(--border);  
+        }  
+  
+        .teacher-account {  
+            display: flex;  
+            align-items: center;  
+            gap: 10px;  
+        }  
+  
+        .avatar {  
+            display: grid;  
+            place-items: center;  
+            width: 35px;  
+            height: 35px;  
+            border-radius: 50%;  
+            background: var(--navy);  
+            color: white;  
+            font-weight: bold;  
+        }  
+  
+        .logout-button {  
+            min-height: 35px;  
+            padding: 7px 12px;  
+            border-color: var(--border);  
+            background: transparent;  
+            color: #485574;  
+        }  
+  
+        .logout-button:hover:not(:disabled) {  
+            background: #F4F5FB;  
+        }  
+  
+        .dashboard-content {  
+            max-width: 1450px;  
+            margin: 0 auto;  
+            padding: 34px 36px 60px;  
+        }  
+  
+        .page-heading {  
+            display: flex;  
+            align-items: center;  
+            gap: 17px;  
+            margin-bottom: 28px;  
+        }  
+  
+        .heading-icon {  
+            display: grid;  
+            place-items: center;  
+            width: 59px;  
+            height: 59px;  
+            flex-shrink: 0;  
+            border-radius: 14px;  
+            background: #EEEAFB;  
+            color: var(--purple);  
+            font-size: 26px;  
+        }  
+  
+        .page-heading h2 {  
+            margin: 0 0 8px;  
+            font-size: 27px;  
+            letter-spacing: -.6px;  
+        }  
+  
+        .page-heading p {  
+            margin: 0;  
+            color: var(--muted);  
+            font-size: 14px;  
+            line-height: 1.5;  
+        }  
+  
+        .stats {  
+            display: grid;  
+            grid-template-columns: repeat(3, minmax(0, 1fr));  
+            gap: 18px;  
+            margin-bottom: 28px;  
+        }  
+  
+        .stat {  
+            display: flex;  
+            align-items: center;  
+            gap: 17px;  
+            min-height: 112px;  
+            padding: 22px;  
+            border: 1px solid var(--border);  
+            border-radius: 12px;  
+            background: white;  
+        }  
+  
+        .stat-icon {  
+            display: grid;  
+            place-items: center;  
+            width: 48px;  
+            height: 48px;  
+            flex-shrink: 0;  
+            border-radius: 12px;  
+            background: #EEEAFB;  
+            color: var(--purple);  
+            font-size: 21px;  
+        }  
+  
+        .stat-label {  
+            color: var(--muted);  
+            font-size: 14px;  
+        }  
+  
+        .stat strong {  
+            display: block;  
+            margin-top: 7px;  
+            color: var(--text);  
+            font-size: 28px;  
+        }  
+  
+        .create-heading {  
+            display: flex;  
+            align-items: flex-start;  
+            gap: 15px;  
+            margin-bottom: 25px;  
+        }  
+  
+        .create-heading .heading-icon {  
+            width: 44px;  
+            height: 44px;  
+            border-radius: 50%;  
+            background: var(--purple);  
+            color: white;  
+            font-size: 24px;  
+        }  
+  
+        .create-heading h2 {  
+            margin: 2px 0 8px;  
+        }  
+  
+        .create-heading p {  
+            margin: 0;  
+            color: var(--muted);  
+            font-size: 14px;  
+            line-height: 1.6;  
+        }  
+  
+        .create-heading .new-test {  
+            margin-left: auto;  
+            flex-shrink: 0;  
+        }  
+  
+        .file-hint {  
+            margin: 7px 0 0;  
+            color: var(--muted);  
+            font-size: 12px;  
+            line-height: 1.5;  
+        }  
+  
+        .quiz-item,  
+        .question-card {  
+            margin-top: 16px;  
+            padding: 20px;  
+            border: 1px solid var(--border);  
+            border-radius: 10px;  
+            background: white;  
+        }  
+  
+        .quiz-item h3 {  
+            margin: 0 0 8px;  
+        }  
+  
+        .question-card {  
+            background: #FCFBFF;  
+        }  
+  
+        .question-heading {  
+            display: flex;  
+            align-items: center;  
+            justify-content: space-between;  
+            flex-wrap: wrap;  
+            gap: 12px;  
+        }  
+  
+        .question-heading h3 {  
+            margin: 0;  
+        }  
+  
+        .empty {  
+            margin-top: 18px;  
+            padding: 32px 15px;  
+            border: 1px dashed #CFD5E4;  
+            border-radius: 10px;  
+            text-align: center;  
+        }  
+  
+        .empty h3 {  
+            margin-top: 0;  
+        }  
+  
+        .table-wrap {  
+            overflow-x: auto;  
+        }  
+  
+        table {  
+            width: 100%;  
+            margin-top: 15px;  
+            border-collapse: collapse;  
+            font-size: 14px;  
+        }  
+  
+        th,  
+        td {  
+            padding: 14px;  
+            border-bottom: 1px solid var(--border);  
+            text-align: left;  
+            white-space: nowrap;  
+        }  
+  
+        th {  
+            background: #F7F8FC;  
+            color: #46516A;  
+            font-weight: 600;  
+        }  
+  
+        .quick-links {  
+            display: grid;  
+            grid-template-columns: repeat(3, minmax(0, 1fr));  
+            gap: 18px;  
+        }  
+  
+        .quick-link {  
+            display: block;  
+            padding: 24px;  
+            border: 1px solid var(--border);  
+            border-radius: 12px;  
+            background: white;  
+            color: var(--text);  
+            text-decoration: none;  
+            transition: border-color .2s, transform .2s;  
+        }  
+  
+        .quick-link:hover {  
+            border-color: var(--purple);  
+            transform: translateY(-2px);  
+        }  
+  
+        .quick-link-icon {  
+            display: grid;  
+            place-items: center;  
+            width: 45px;  
+            height: 45px;  
+            margin-bottom: 17px;  
+            border-radius: 10px;  
+            background: #EEEAFB;  
+            color: var(--purple);  
+            font-size: 23px;  
+        }  
+  
+        .quick-link h3 {  
+            margin: 0 0 8px;  
+            font-size: 17px;  
+        }  
+  
+        .quick-link p {  
+            margin: 0;  
+            color: var(--muted);  
+            font-size: 13px;  
+            line-height: 1.6;  
+        }  
+  
+        /* RESPONSIVE */  
+  
+        @media (max-width: 1000px) {  
+            .sidebar {  
+                width: 205px;  
+            }  
+  
+            .dashboard-content {  
+                padding: 28px 22px 50px;  
+            }  
+  
+            .topbar {  
+                padding: 12px 22px;  
+            }  
+  
+            .quick-links {  
+                grid-template-columns: 1fr;  
+            }  
+        }  
+  
+        @media (max-width: 760px) {  
+            .dashboard-layout {  
+                display: block;  
+            }  
+  
+            .sidebar {  
+                width: 100%;  
+                height: auto;  
+                position: static;  
+                overflow: visible;  
+                padding: 15px;  
+            }  
+  
+            .brand {  
+                padding: 0 4px 17px;  
+            }  
+  
+            .side-nav {  
+                flex-direction: row;  
+                overflow-x: auto;  
+            }  
+  
+            .side-link {  
+                width: auto;  
+                padding: 11px;  
+                white-space: nowrap;  
+            }  
+  
+            .topbar {  
+                min-height: 65px;  
+                padding: 12px 17px;  
+                flex-wrap: wrap;  
+                gap: 12px;  
+            }  
+  
+            .dashboard-content {  
+                padding: 24px 15px 40px;  
+            }  
+  
+            .stats {  
+                grid-template-columns: 1fr;  
+                gap: 12px;  
+            }  
+  
+            .stat {  
+                min-height: 90px;  
+                padding: 16px;  
+            }  
+  
+            .two-columns,  
+            .options-grid {  
+                grid-template-columns: 1fr;  
+                gap: 0;  
+            }  
+  
+            .card {  
+                padding: 20px;  
+            }  
+  
+            .page-heading h2 {  
+                font-size: 23px;  
+            }  
+  
+            .create-heading {  
+                flex-wrap: wrap;  
+            }  
+  
+            .create-heading .new-test {  
+                margin-left: 0;  
+            }  
+        }  
+    </style>  
+</head>  
+  
+<body>  
+  
+{% if page == "login" %}  
+  
+    <!-- TEACHER LOGIN -->  
+  
+    <header class="login-header">  
+        <div class="brand">  
+            <div class="quiznest-logo" aria-hidden="true">  
+                <span>Q</span>  
+            </div>  
+  
+            <div class="brand-text">  
+                <h1>Quiz<span>Nest</span></h1>  
+                <p>Teacher Portal</p>  
+            </div>  
+        </div>  
+  
+        <a href="{{ url_for('home') }}">  
+            ← Student Home  
+        </a>  
+    </header>  
+  
+    <main>  
+        <section class="card login-card">  
+            <h2>Teacher Login</h2>  
+  
+            <p class="muted">  
+                Sign in to access your teacher dashboard.  
+            </p>  
+  
+            {% if error %}  
+            <div class="message error" role="alert">  
+                {{ error }}  
+            </div>  
+            {% endif %}  
+  
+            <form  
+                action="{{ url_for('teacher_login') }}"  
+                method="POST"  
+            >  
+                <label for="username">  
+                    Username  
+                </label>  
+  
+                <input  
+                    type="text"  
+                    id="username"  
+                    name="username"  
+                    placeholder="Enter username"  
+                    autocomplete="username"  
+                    required  
+                >  
+  
+                <label for="password">  
+                    Password  
+                </label>  
+  
+                <input  
+                    type="password"  
+                    id="password"  
+                    name="password"  
+                    placeholder="Enter password"  
+                    autocomplete="current-password"  
+                    required  
+                >  
+  
+                <button type="submit" class="full-width">  
+                    Login  
+                </button>  
+            </form> 
+                        <p style="text-align: center; margin-top: 18px;">
+                Don't have an account?
                 <a
-                    href="{{ url_for('teacher_dashboard') }}"
-                    class="side-link {% if page == 'dashboard' %}active{% endif %}"
-                    {% if page == 'dashboard' %}aria-current="page"{% endif %}
+                    href="{{ url_for('teacher_register') }}"
+                    style="
+                        color: #5145A5;
+                        font-weight: 600;
+                        text-decoration: none;
+                    "
                 >
-                    <span class="side-icon">⌂</span>
-                    Dashboard
+                    Register here
                 </a>
-
-                <a
-                    href="{{ url_for('teacher_create_page') }}"
-                    class="side-link {% if page == 'create' %}active{% endif %}"
-                    {% if page == 'create' %}aria-current="page"{% endif %}
-                >
-                    <span class="side-icon">⊕</span>
-                    Create Test
-                </a>
-
-                <a
-                    href="{{ url_for('teacher_my_tests_page') }}"
-                    class="side-link {% if page == 'my_tests' %}active{% endif %}"
-                    {% if page == 'my_tests' %}aria-current="page"{% endif %}
-                >
-                    <span class="side-icon">☷</span>
-                    My Tests
-                </a>
-
-                <a
-                    href="{{ url_for('teacher_student_results_page') }}"
-                    class="side-link {% if page == 'results' %}active{% endif %}"
-                    {% if page == 'results' %}aria-current="page"{% endif %}
-                >
-                    <span class="side-icon">▥</span>
-                    Results
-                </a>
-            </nav>
-
-        </aside>
-
-        <!-- RIGHT SIDE -->
-
-        <div class="dashboard-area">
-
-            <!-- TOP NAVIGATION -->
-
-            <header class="topbar">
-
-                <a href="{{ url_for('home') }}">
-                    ⌂ &nbsp;Student Home
-                </a>
-
-                <div class="topbar-divider"></div>
-
-                <div class="teacher-account">
-
-                    <span class="avatar">
-                        {{ teacher.name[0] | upper if teacher and teacher.name else 'T' }}
-                    </span>
-
-                    <span>
-                        {{ teacher.name if teacher else 'Teacher' }}
-                    </span>
-
-                    <form
-                        action="{{ url_for('teacher_logout') }}"
-                        method="POST"
-                    >
-                        <button
-                            type="submit"
-                            class="logout-button"
-                        >
-                            Logout
-                        </button>
-                    </form>
-
-                </div>
-
-            </header>
-
-            <main class="dashboard-content">
-
-                {% if page == "dashboard" %}
-
-                <!-- DASHBOARD PAGE -->
-
-                <div class="page-heading">
-                    <div class="heading-icon">▤</div>
-
-                    <div>
-                        <h2>Teacher Dashboard</h2>
-                        <p>
-                            Create AI-powered tests, manage your
-                            questions and view student results.
-                        </p>
-                    </div>
-                </div>
-
-                <div class="stats">
-
-                    <div class="stat">
-                        <div class="stat-icon">▤</div>
-
-                        <div>
-                            <span class="stat-label">
-                                Total Tests
-                            </span>
-
-                            <strong>
-                                {{ quizzes | length }}
-                            </strong>
-                        </div>
-                    </div>
-
-                    <div class="stat">
-                        <div class="stat-icon">↗</div>
-
-                        <div>
-                            <span class="stat-label">
-                                Published Tests
-                            </span>
-
-                            <strong>
-                                {{
-                                    quizzes
-                                    | selectattr(
-                                        "status",
-                                        "equalto",
-                                        "published"
-                                    )
-                                    | list
-                                    | length
-                                }}
-                            </strong>
-                        </div>
-                    </div>
-
-                    <div class="stat">
-                        <div class="stat-icon">▣</div>
-
-                        <div>
-                            <span class="stat-label">
-                                Draft Tests
-                            </span>
-
-                            <strong>
-                                {{
-                                    quizzes
-                                    | selectattr(
-                                        "status",
-                                        "equalto",
-                                        "draft"
-                                    )
-                                    | list
-                                    | length
-                                }}
-                            </strong>
-                        </div>
-                    </div>
-
-                </div>
-
-                <div class="quick-links">
-
-                    <a
-                        href="{{ url_for('teacher_create_page') }}"
-                        class="quick-link"
-                    >
-                        <span class="quick-link-icon">＋</span>
-
-                        <h3>Create Test</h3>
-
-                        <p>
-                            Generate AI questions or add
-                            your own questions.
-                        </p>
-                    </a>
-
-                    <a
-                        href="{{ url_for('teacher_my_tests_page') }}"
-                        class="quick-link"
-                    >
-                        <span class="quick-link-icon">☷</span>
-
-                        <h3>My Tests</h3>
-
-                        <p>
-                            View, edit and publish
-                            your saved tests.
-                        </p>
-                    </a>
-
-                    <a
-                        href="{{ url_for('teacher_student_results_page') }}"
-                        class="quick-link"
-                    >
-                        <span class="quick-link-icon">▥</span>
-
-                        <h3>Student Results</h3>
-
-                        <p>
-                            Check scores from students
-                            who completed your tests.
-                        </p>
-                    </a>
-
-                </div>
-
-                {% elif page == "create" %}
-
-                <!-- CREATE TEST PAGE -->
-
-                <section class="card">
-
-                    <div class="create-heading">
-                        <div class="heading-icon">+</div>
-
-                        <div>
-                            <h2 id="editorTitle">
-                                Create a New Test
-                            </h2>
-
-                            <p>
-                                Upload study material or paste notes.
-                                Review AI-generated questions
-                                before saving.
-                            </p>
-                        </div>
-
-                        <button
-                            type="button"
-                            id="newTestButton"
-                            class="secondary new-test"
-                        >
-                            + New Test
-                        </button>
-                    </div>
-
-                    <form id="generateForm">
-
-                        <label for="testTitle">
-                            Test Title
-                        </label>
-
-                        <input
-                            type="text"
-                            id="testTitle"
-                            maxlength="200"
-                            placeholder="Example: Python Unit Test"
-                            required
-                        >
-
-                        <div class="two-columns">
-
-                            <div>
-                                <label for="questionCount">
-                                    Number of Questions
-                                </label>
-
-                                <select id="questionCount">
-                                    <option value="5">
-                                        5 Questions
-                                    </option>
-
-                                    <option value="10" selected>
-                                        10 Questions
-                                    </option>
-
-                                    <option value="15">
-                                        15 Questions
-                                    </option>
-
-                                    <option value="20">
-                                        20 Questions
-                                    </option>
-
-                                    <option value="25">
-                                        25 Questions
-                                    </option>
-
-                                    <option value="30">
-                                        30 Questions
-                                    </option>
-                                </select>
-                            </div>
-
-                            <div>
-                                <label for="studyFiles">
-                                    Upload Study Material
-                                </label>
-
-                                <input
-                                    type="file"
-                                    id="studyFiles"
-                                    accept=".pdf,.txt,.jpg,.jpeg,.png,.webp"
-                                    multiple
-                                >
-
-                                <p class="file-hint">
-                                    PDF, TXT, JPG, PNG, WEBP ·
-                                    Maximum 25 MB and 10 images
-                                </p>
-                            </div>
-
-                        </div>
-
-                        <label for="studyNotes">
-                            Paste Study Notes
-                        </label>
-
-                        <textarea
-                            id="studyNotes"
-                            placeholder="Or paste your study material here..."
-                        ></textarea>
-
-                        <div class="actions">
-
-                            <button
-                                type="submit"
-                                id="generateButton"
-                            >
-                                ✦ Generate Test
-                            </button>
-
-                            <button
-                                type="button"
-                                id="addManualButton"
-                                class="secondary"
-                            >
-                                + Add Question Manually
-                            </button>
-
-                        </div>
-
-                    </form>
-
-                    <div
-                        id="editorMessage"
-                        class="message hidden"
-                        role="status"
-                        aria-live="polite"
-                    ></div>
-
-                    <!-- QUESTION EDITOR -->
-
-                    <section
-                        id="questionEditor"
-                        class="hidden"
-                    >
-
-                        <hr
-                            style="border:0;border-top:1px solid #E5E7EB;margin:30px 0;"
-                        >
-
-                        <div class="section-title">
-
-                            <h2>
-                                Review and Edit Questions
-                            </h2>
-
-                            <span
-                                id="questionTotal"
-                                class="badge draft"
-                            >
-                                0 Questions
-                            </span>
-
-                        </div>
-
-                        <p class="muted">
-                            Check every question and correct
-                            answer before publishing.
-                        </p>
-
-                        <div id="questionsContainer"></div>
-
-                        <div class="actions">
-
-                            <button
-                                type="button"
-                                id="saveDraftButton"
-                                class="secondary"
-                            >
-                                Save as Draft
-                            </button>
-
-                            <button
-                                type="button"
-                                id="publishButton"
-                            >
-                                Publish Test
-                            </button>
-
-                            <button
-                                type="button"
-                                id="addAnotherButton"
-                                class="secondary"
-                            >
-                                + Add Question
-                            </button>
-
-                        </div>
-
-                    </section>
-
-                </section>
-
-                {% elif page == "my_tests" %}
-
-                <!-- MY TESTS PAGE -->
-
-                <div class="page-heading">
-                    <div class="heading-icon">☷</div>
-
-                    <div>
-                        <h2>My Tests</h2>
-
-                        <p>
-                            View, edit and publish
-                            your saved tests.
-                        </p>
-                    </div>
-                </div>
-
-                <section class="card">
-
-                    <div class="section-title">
-
-                        <h2>Saved Tests</h2>
-
-                        <div class="top-actions">
-
-                            <a
-                                href="{{ url_for('teacher_create_page') }}"
-                                class="button"
-                            >
-                                + Create Test
-                            </a>
-
-                            <button
-                                type="button"
-                                id="refreshTestsButton"
-                                class="secondary"
-                            >
-                                Refresh
-                            </button>
-
-                        </div>
-
-                    </div>
-
-                    <p class="card-description">
-                        Tests with student attempts
-                        cannot be edited or deleted.
-                    </p>
-
-                    <div
-                        id="testsContainer"
-                        aria-live="polite"
-                    >
-                        <p class="muted">
-                            Loading your tests...
-                        </p>
-                    </div>
-
-                </section>
-
-                {% elif page == "results" %}
-
-                <!-- STUDENT RESULTS PAGE -->
-
-                <div class="page-heading">
-                    <div class="heading-icon">▥</div>
-
-                    <div>
-                        <h2>Student Results</h2>
-
-                        <p>
-                            View scores from students who
-                            have submitted your published tests.
-                        </p>
-                    </div>
-                </div>
-
-                <section class="card">
-
-                    <div class="section-title">
-
-                        <h2>All Results</h2>
-
-                        <button
-                            type="button"
-                            id="refreshResultsButton"
-                            class="secondary"
-                        >
-                            Refresh Results
-                        </button>
-
-                    </div>
-
-                    <p class="card-description">
-                        Results will appear after
-                        students submit their tests.
-                    </p>
-
-                    <div
-                        id="resultsContainer"
-                        aria-live="polite"
-                    >
-                        <p class="muted">
-                            Loading results...
-                        </p>
-                    </div>
-
-                </section>
-
-                {% endif %}
-
-            </main>
-        </div>
-    </div>
-
-    {% if page == "create" %}
-
-    <!-- CREATE AND EDIT TEST JAVASCRIPT -->
-
-    <script>
-    (function () {
-        "use strict";
-
-        const $ = (id) => document.getElementById(id);
-        const letters = ["A", "B", "C", "D"];
-
-        let currentQuestions = [];
-        let editingQuizId = null;
-        let busy = false;
-
-        function escapeHTML(value) {
-            return String(value ?? "").replace(
-                /[&<>"']/g,
-                (character) => ({
-                    "&": "&amp;",
-                    "<": "&lt;",
-                    ">": "&gt;",
-                    '"': "&quot;",
-                    "'": "&#39;"
-                })[character]
-            );
-        }
-
-        function showMessage(text, type = "info") {
-            const element = $("editorMessage");
-
-            element.textContent = text;
-            element.className = "message " + type;
-        }
-
-        function setBusy(value) {
-            busy = value;
-
-            [
-                "generateButton",
-                "saveDraftButton",
-                "publishButton",
-                "addManualButton",
-                "addAnotherButton",
-                "newTestButton"
-            ].forEach((id) => {
-                const element = $(id);
-
-                if (element) {
-                    element.disabled = value;
-                }
-            });
-        }
-
-        async function readResponse(response) {
-            const data = await response.json().catch(
-                () => ({})
-            );
-
-            if (!response.ok) {
-                if (response.status === 401) {
-                    throw new Error(
-                        "Your session has expired. Please log in again."
-                    );
-                }
-
-                throw new Error(
-                    data.error || "Something went wrong."
-                );
-            }
-
-            return data;
-        }
-
-        function emptyQuestion() {
-            return {
-                question: "",
-                options: ["", "", "", ""],
-                correct_answer: "A",
-                explanation: ""
-            };
-        }
-
-        function renderQuestions() {
-            const container = $("questionsContainer");
-
-            container.innerHTML = "";
-
-            $("questionEditor").classList.toggle(
-                "hidden",
-                currentQuestions.length === 0
-            );
-
-            $("questionTotal").textContent =
-                currentQuestions.length + " Questions";
-
-            currentQuestions.forEach((item, index) => {
-                const card = document.createElement("div");
-
-                card.className = "question-card";
-                card.dataset.index = index;
-
-                const optionFields = letters.map(
-                    (letter, optionIndex) => `
-                        <div>
-                            <label>Option ${letter}</label>
-
-                            <input
-                                class="option-input"
-                                data-option="${optionIndex}"
-                                value="${escapeHTML(
-                                    item.options[optionIndex]
-                                )}"
-                                required
-                            >
-                        </div>
-                    `
-                ).join("");
-
-                card.innerHTML = `
-                    <div class="question-heading">
-                        <h3>Question ${index + 1}</h3>
-
-                        <button
-                            type="button"
-                            class="danger remove-question"
-                        >
-                            Delete Question
-                        </button>
-                    </div>
-
-                    <label>Question</label>
-
-                    <textarea
-                        class="question-input"
-                        required
-                    >${escapeHTML(item.question)}</textarea>
-
-                    <div class="options-grid">
-                        ${optionFields}
-                    </div>
-
-                    <label>Correct Answer</label>
-
-                    <select class="answer-input">
-                        ${letters.map((letter) => `
-                            <option
-                                value="${letter}"
-                                ${
-                                    item.correct_answer === letter
-                                        ? "selected"
-                                        : ""
-                                }
-                            >
-                                Option ${letter}
-                            </option>
-                        `).join("")}
-                    </select>
-
-                    <label>Explanation (Optional)</label>
-
-                    <textarea
-                        class="explanation-input"
-                        placeholder="Why is this answer correct?"
-                    >${escapeHTML(
-                        item.explanation || ""
-                    )}</textarea>
-                `;
-
-                card.querySelector(
-                    ".remove-question"
-                ).addEventListener("click", () => {
-                    if (busy) {
-                        return;
-                    }
-
-                    collectQuestions();
-
-                    currentQuestions.splice(index, 1);
-
-                    renderQuestions();
-                });
-
-                container.appendChild(card);
-            });
-        }
-
-        function collectQuestions() {
-            const cards = [
-                ...document.querySelectorAll(
-                    "#questionsContainer .question-card"
-                )
-            ];
-
-            currentQuestions = cards.map((card) => ({
-                question: card.querySelector(
-                    ".question-input"
-                ).value.trim(),
-
-                options: [
-                    ...card.querySelectorAll(".option-input")
-                ].map((input) => input.value.trim()),
-
-                correct_answer: card.querySelector(
-                    ".answer-input"
-                ).value,
-
-                explanation: card.querySelector(
-                    ".explanation-input"
-                ).value.trim()
-            }));
-
-            return currentQuestions;
-        }
-
-        function validateQuestions(questions) {
-            if (
-                questions.length < 1 ||
-                questions.length > 30
-            ) {
-                throw new Error(
-                    "A test must have 1 to 30 questions."
-                );
-            }
-
-            for (
-                let index = 0;
-                index < questions.length;
-                index++
-            ) {
-                const item = questions[index];
-
-                if (
-                    !item.question ||
-                    item.options.some(
-                        (option) => !option
-                    )
-                ) {
-                    throw new Error(
-                        "Complete question " +
-                        (index + 1) +
-                        " and all four options."
-                    );
-                }
-            }
-        }
-
-        // GENERATE AI QUESTIONS
-
-        $("generateForm").addEventListener(
-            "submit",
-            async (event) => {
-                event.preventDefault();
-
-                if (busy) {
-                    return;
-                }
-
-                const title = $("testTitle").value.trim();
-                const notes = $("studyNotes").value.trim();
-                const files = [...$("studyFiles").files];
-
-                if (!title) {
-                    showMessage(
-                        "Please enter a test title.",
-                        "error"
-                    );
-
-                    return;
-                }
-
-                if (!notes && files.length === 0) {
-                    showMessage(
-                        "Upload material or paste your notes.",
-                        "error"
-                    );
-
-                    return;
-                }
-
-                const totalSize = files.reduce(
-                    (sum, file) => sum + file.size,
-                    0
-                );
-
-                const imageCount = files.filter(
-                    (file) => /\.(jpg|jpeg|png|webp)$/i.test(
-                        file.name
-                    )
-                ).length;
-
-                if (totalSize > 25 * 1024 * 1024) {
-                    showMessage(
-                        "Files exceed the 25 MB limit.",
-                        "error"
-                    );
-
-                    return;
-                }
-
-                if (imageCount > 10) {
-                    showMessage(
-                        "Maximum 10 images allowed.",
-                        "error"
-                    );
-
-                    return;
-                }
-
-                if (
-                    currentQuestions.length > 0 &&
-                    !confirm(
-                        "Generate new questions? Your unsaved " +
-                        "question edits will be replaced."
-                    )
-                ) {
-                    return;
-                }
-
-                const formData = new FormData();
-
-                formData.append("title", title);
-
-                formData.append(
-                    "count",
-                    $("questionCount").value
-                );
-
-                formData.append("study_text", notes);
-
-                files.forEach((file) => {
-                    formData.append("files", file);
-                });
-
-                setBusy(true);
-
-                showMessage(
-                    "AI is generating questions. Please wait...",
-                    "info"
-                );
-
-                try {
-                    const response = await fetch(
-                        "/teacher/generate",
-                        {
-                            method: "POST",
-                            body: formData
-                        }
-                    );
-
-                    const data = await readResponse(
-                        response
-                    );
-
-                    currentQuestions = data.questions;
-
-                    renderQuestions();
-
-                    showMessage(
-                        currentQuestions.length +
-                        " questions generated using " +
-                        data.model +
-                        ". Review them before saving.",
-                        "success"
-                    );
-
-                    $("questionEditor").scrollIntoView({
-                        behavior: "smooth"
-                    });
-
-                } catch (error) {
-                    showMessage(
-                        error.message,
-                        "error"
-                    );
-
-                } finally {
-                    setBusy(false);
-                }
-            }
-        );
-
-        // ADD QUESTION MANUALLY
-
-        function addQuestion() {
-            if (busy) {
-                return;
-            }
-
-            collectQuestions();
-
-            if (currentQuestions.length >= 30) {
-                showMessage(
-                    "Maximum 30 questions allowed.",
-                    "error"
-                );
-
-                return;
-            }
-
-            currentQuestions.push(
-                emptyQuestion()
-            );
-
-            renderQuestions();
-
-            $("questionEditor").scrollIntoView({
-                behavior: "smooth"
-            });
-        }
-
-        $("addManualButton").addEventListener(
-            "click",
-            addQuestion
-        );
-
-        $("addAnotherButton").addEventListener(
-            "click",
-            addQuestion
-        );
-
-        // SAVE DRAFT OR PUBLISH
-
-        async function saveTest(status) {
-            if (busy) {
-                return;
-            }
-
-            const title = $("testTitle").value.trim();
-            const questions = collectQuestions();
-
-            if (!title || title.length > 200) {
-                showMessage(
-                    "Enter a valid test title.",
-                    "error"
-                );
-
-                return;
-            }
-
-            try {
-                validateQuestions(questions);
-
-            } catch (error) {
-                showMessage(
-                    error.message,
-                    "error"
-                );
-
-                return;
-            }
-
-            if (
-                status === "published" &&
-                !confirm(
-                    "Publish this test for students?"
-                )
-            ) {
-                return;
-            }
-
-            const url = editingQuizId === null
-                ? "/teacher/quizzes"
-                : "/teacher/quizzes/" + editingQuizId;
-
-            const method = editingQuizId === null
-                ? "POST"
-                : "PUT";
-
-            setBusy(true);
-
-            showMessage(
-                "Saving your test...",
-                "info"
-            );
-
-            try {
-                const response = await fetch(url, {
-                    method: method,
-
-                    headers: {
-                        "Content-Type": "application/json"
-                    },
-
-                    body: JSON.stringify({
-                        title,
-                        status,
-                        questions
-                    })
-                });
-
-                const data = await readResponse(
-                    response
-                );
-
-                editingQuizId = data.quiz.id;
-
-                $("editorTitle").textContent =
-                    "Edit Test #" + editingQuizId;
-
-                showMessage(
-                    status === "published"
-                        ? "Test published successfully!"
-                        : "Draft saved successfully!",
-                    "success"
-                );
-
-            } catch (error) {
-                showMessage(
-                    error.message,
-                    "error"
-                );
-
-            } finally {
-                setBusy(false);
-            }
-        }
-
-        $("saveDraftButton").addEventListener(
-            "click",
-            () => saveTest("draft")
-        );
-
-        $("publishButton").addEventListener(
-            "click",
-            () => saveTest("published")
-        );
-
-        // RESET EDITOR
-
-        function resetEditor() {
-            if (
-                currentQuestions.length > 0 &&
-                !confirm(
-                    "Start a new test? Unsaved changes will be lost."
-                )
-            ) {
-                return;
-            }
-
-            editingQuizId = null;
-            currentQuestions = [];
-
-            $("editorTitle").textContent =
-                "Create a New Test";
-
-            $("generateForm").reset();
-
-            $("editorMessage").classList.add(
-                "hidden"
-            );
-
-            renderQuestions();
-
-            window.history.replaceState(
-                {},
-                "",
-                "{{ url_for('teacher_create_page') }}"
-            );
-
-            window.scrollTo({
-                top: 0,
-                behavior: "smooth"
-            });
-        }
-
-        $("newTestButton").addEventListener(
-            "click",
-            resetEditor
-        );
-
-        // LOAD SAVED TEST FOR EDITING
-
-        async function loadSavedTest(quizId) {
-            try {
-                const response = await fetch(
-                    "/teacher/quizzes/" + quizId
-                );
-
-                const data = await readResponse(
-                    response
-                );
-
-                const quiz = data.quiz;
-
-                if (quiz.attempt_count > 0) {
-                    showMessage(
-                        "This test already has student attempts and cannot be edited.",
-                        "error"
-                    );
-
-                    return;
-                }
-
-                editingQuizId = quiz.id;
-
-                $("testTitle").value = quiz.title;
-                $("studyNotes").value = "";
-                $("studyFiles").value = "";
-
-                currentQuestions = quiz.questions.map(
-                    (question) => ({
-                        question: question.question,
-                        options: [...question.options],
-                        correct_answer:
-                            question.correct_answer,
-                        explanation:
-                            question.explanation || ""
-                    })
-                );
-
-                $("editorTitle").textContent =
-                    "Edit Test #" + quiz.id;
-
-                renderQuestions();
-
-                showMessage(
-                    "Test loaded. Edit the questions and save.",
-                    "info"
-                );
-
-            } catch (error) {
-                showMessage(
-                    error.message,
-                    "error"
-                );
-            }
-        }
-
-        // CHECK WHETHER AN EXISTING TEST WAS SELECTED
-
-        const searchParams = new URLSearchParams(
-            window.location.search
-        );
-
-        const editId = searchParams.get("edit");
-
-        if (editId && /^[1-9]\d*$/.test(editId)) {
-            loadSavedTest(Number(editId));
-        }
-
-    })();
-    </script>
-
-    {% elif page == "my_tests" %}
-
-    <!-- MY TESTS JAVASCRIPT -->
-
-    <script>
-    (function () {
-        "use strict";
-
-        const container = document.getElementById(
-            "testsContainer"
-        );
-
-        function escapeHTML(value) {
-            return String(value ?? "").replace(
-                /[&<>"']/g,
-                (character) => ({
-                    "&": "&amp;",
-                    "<": "&lt;",
-                    ">": "&gt;",
-                    '"': "&quot;",
-                    "'": "&#39;"
-                })[character]
-            );
-        }
-
-        async function readResponse(response) {
-            const data = await response.json().catch(
-                () => ({})
-            );
-
-            if (!response.ok) {
-                throw new Error(
-                    data.error || "Something went wrong."
-                );
-            }
-
-            return data;
-        }
-
-        // LOAD ALL TESTS
-
-        async function loadTests() {
-            container.innerHTML = `
-                <p class="muted">
-                    Loading your tests...
-                </p>
-            `;
-
-            try {
-                const response = await fetch(
-                    "/teacher/quizzes"
-                );
-
-                const data = await readResponse(
-                    response
-                );
-
-                const quizzes = data.quizzes;
-
-                container.innerHTML = "";
-
-                if (quizzes.length === 0) {
-                    container.innerHTML = `
-                        <div class="empty">
-                            <h3>No tests created yet</h3>
-
-                            <p class="muted">
-                                Create your first test.
-                            </p>
-                        </div>
-                    `;
-
-                    return;
-                }
-
-                quizzes.forEach((quiz) => {
-                    const item = document.createElement(
-                        "div"
-                    );
-
-                    item.className = "quiz-item";
-
-                    item.innerHTML = `
-                        <h3>
-                            ${escapeHTML(quiz.title)}
-                        </h3>
-
-                        <p class="muted small">
-                            ${quiz.question_count} Questions
-
-                            &nbsp;•&nbsp;
-
-                            ${quiz.attempt_count} Attempts
-                        </p>
-
-                        <span class="badge ${
-                            quiz.status === "published"
-                                ? "published"
-                                : "draft"
-                        }">
-                            ${escapeHTML(quiz.status)}
-                        </span>
-
-                        <div class="actions"></div>
-                    `;
-
-                    const actions = item.querySelector(
-                        ".actions"
-                    );
-
-                    if (quiz.attempt_count === 0) {
-                        const editLink = document.createElement(
-                            "a"
-                        );
-
-                        editLink.className =
-                            "button secondary";
-
-                        editLink.textContent = "Edit";
-
-                        editLink.href =
-                            "{{ url_for('teacher_create_page') }}" +
-                            "?edit=" +
-                            encodeURIComponent(quiz.id);
-
-                        actions.appendChild(editLink);
-
-                        if (quiz.status === "draft") {
-                            const publishButton =
-                                document.createElement(
-                                    "button"
-                                );
-
-                            publishButton.type = "button";
-                            publishButton.textContent =
-                                "Publish";
-
-                            publishButton.addEventListener(
-                                "click",
-                                () => publishTest(quiz.id)
-                            );
-
-                            actions.appendChild(
-                                publishButton
-                            );
-                        }
-
-                        const deleteButton =
-                            document.createElement(
-                                "button"
-                            );
-
-                        deleteButton.type = "button";
-                        deleteButton.className = "danger";
-                        deleteButton.textContent = "Delete";
-
-                        deleteButton.addEventListener(
-                            "click",
-                            () => deleteTest(quiz.id)
-                        );
-
-                        actions.appendChild(
-                            deleteButton
-                        );
-
-                    } else {
-                        const note = document.createElement(
-                            "span"
-                        );
-
-                        note.className = "muted small";
-
-                        note.textContent =
-                            "Locked after student attempts";
-
-                        actions.appendChild(note);
-                    }
-
-                    container.appendChild(item);
-                });
-
-            } catch (error) {
-                container.textContent = error.message;
-            }
-        }
-
-        // PUBLISH DRAFT
-
-        async function publishTest(quizId) {
-            if (!confirm("Publish this test?")) {
-                return;
-            }
-
-            try {
-                const response = await fetch(
-                    "/teacher/quizzes/" +
-                    quizId +
-                    "/publish",
-                    {
-                        method: "POST"
-                    }
-                );
-
-                await readResponse(response);
-
-                await loadTests();
-
-                alert(
-                    "Test published successfully!"
-                );
-
-            } catch (error) {
-                alert(error.message);
-            }
-        }
-
-        // DELETE TEST
-
-        async function deleteTest(quizId) {
-            if (
-                !confirm(
-                    "Permanently delete this test?"
-                )
-            ) {
-                return;
-            }
-
-            try {
-                const response = await fetch(
-                    "/teacher/quizzes/" + quizId,
-                    {
-                        method: "DELETE"
-                    }
-                );
-
-                await readResponse(response);
-
-                await loadTests();
-
-                alert(
-                    "Test deleted successfully."
-                );
-
-            } catch (error) {
-                alert(error.message);
-            }
-        }
-
-        document.getElementById(
-            "refreshTestsButton"
-        ).addEventListener(
-            "click",
-            loadTests
-        );
-
-        loadTests();
-
-    })();
-    </script>
-
-    {% elif page == "results" %}
-
-    <!-- STUDENT RESULTS JAVASCRIPT -->
-
-    <script>
-    (function () {
-        "use strict";
-
-        const container = document.getElementById(
-            "resultsContainer"
-        );
-
-        function escapeHTML(value) {
-            return String(value ?? "").replace(
-                /[&<>"']/g,
-                (character) => ({
-                    "&": "&amp;",
-                    "<": "&lt;",
-                    ">": "&gt;",
-                    '"': "&quot;",
-                    "'": "&#39;"
-                })[character]
-            );
-        }
-
-        async function readResponse(response) {
-            const data = await response.json().catch(
-                () => ({})
-            );
-
-            if (!response.ok) {
-                throw new Error(
-                    data.error || "Something went wrong."
-                );
-            }
-
-            return data;
-        }
-
-        // LOAD STUDENT RESULTS
-
-        async function loadResults() {
-            container.innerHTML = `
-                <p class="muted">
-                    Loading results...
-                </p>
-            `;
-
-            try {
-                const response = await fetch(
-                    "/teacher/results"
-                );
-
-                const data = await readResponse(
-                    response
-                );
-
-                container.innerHTML = "";
-
-                if (data.results.length === 0) {
-                    container.innerHTML = `
-                        <div class="empty">
-                            <h3>
-                                No student results yet
-                            </h3>
-
-                            <p class="muted">
-                                Results will appear here
-                                after students submit
-                                their tests.
-                            </p>
-                        </div>
-                    `;
-
-                    return;
-                }
-
-                const rows = data.results.map(
-                    (result) => `
-                        <tr>
-                            <td>
-                                ${escapeHTML(
-                                    result.student_name
-                                )}
-                            </td>
-
-                            <td>
-                                ${escapeHTML(
-                                    result.roll_no
-                                )}
-                            </td>
-
-                            <td>
-                                ${escapeHTML(
-                                    result.student_class
-                                )}
-                            </td>
-
-                            <td>
-                                ${escapeHTML(
-                                    result.test_title
-                                )}
-                            </td>
-
-                            <td>
-                                ${result.score}/${result.total}
-                            </td>
-
-                            <td>
-                                ${result.percentage}%
-                            </td>
-                        </tr>
-                    `
-                ).join("");
-
-                container.innerHTML = `
-                    <div class="table-wrap">
-                        <table>
-                            <thead>
-                                <tr>
-                                    <th>Name</th>
-                                    <th>Roll No.</th>
-                                    <th>Class</th>
-                                    <th>Test</th>
-                                    <th>Score</th>
-                                    <th>Percentage</th>
-                                </tr>
-                            </thead>
-
-                            <tbody>
-                                ${rows}
-                            </tbody>
-                        </table>
-                    </div>
-                `;
-
-            } catch (error) {
-                container.textContent = error.message;
-            }
-        }
-
-        document.getElementById(
-            "refreshResultsButton"
-        ).addEventListener(
-            "click",
-            loadResults
-        );
-
-        loadResults();
-
-    })();
-    </script>
-
-    {% endif %}
-
-{% endif %}
-
-</body>
-</html>
+            </p> 
+        </section>  
+    </main>  
+  
+{% else %}  
+  
+    <!-- TEACHER PORTAL -->  
+  
+    <div class="dashboard-layout">  
+  
+        <!-- LEFT SIDEBAR -->  
+  
+        <aside class="sidebar">  
+  
+            <div class="brand">  
+                <div class="quiznest-logo" aria-hidden="true">  
+                    <span>Q</span>  
+                </div>  
+  
+                <div class="brand-text">  
+                    <h1>Quiz<span>Nest</span></h1>  
+                    <p>Learn Smarter with AI</p>  
+                </div>  
+            </div>  
+  
+            <nav  
+                class="side-nav"  
+                aria-label="Teacher navigation"  
+            >  
+                <a  
+                    href="{{ url_for('teacher_dashboard') }}"  
+                    class="side-link {% if page == 'dashboard' %}active{% endif %}"  
+                    {% if page == 'dashboard' %}aria-current="page"{% endif %}  
+                >  
+                    <span class="side-icon">⌂</span>  
+                    Dashboard  
+                </a>  
+  
+                <a  
+                    href="{{ url_for('teacher_create_page') }}"  
+                    class="side-link {% if page == 'create' %}active{% endif %}"  
+                    {% if page == 'create' %}aria-current="page"{% endif %}  
+                >  
+                    <span class="side-icon">⊕</span>  
+                    Create Test  
+                </a>  
+  
+                <a  
+                    href="{{ url_for('teacher_my_tests_page') }}"  
+                    class="side-link {% if page == 'my_tests' %}active{% endif %}"  
+                    {% if page == 'my_tests' %}aria-current="page"{% endif %}  
+                >  
+                    <span class="side-icon">☷</span>  
+                    My Tests  
+                </a>  
+  
+                <a  
+                    href="{{ url_for('teacher_student_results_page') }}"  
+                    class="side-link {% if page == 'results' %}active{% endif %}"  
+                    {% if page == 'results' %}aria-current="page"{% endif %}  
+                >  
+                    <span class="side-icon">▥</span>  
+                    Results  
+                </a>  
+            </nav>  
+  
+        </aside>  
+  
+        <!-- RIGHT SIDE -->  
+  
+        <div class="dashboard-area">  
+  
+            <!-- TOP NAVIGATION -->  
+  
+            <header class="topbar">  
+  
+                <a href="{{ url_for('home') }}">  
+                    ⌂ &nbsp;Student Home  
+                </a>  
+  
+                <div class="topbar-divider"></div>  
+  
+                <div class="teacher-account">  
+  
+                    <span class="avatar">  
+                        {{ teacher.name[0] | upper if teacher and teacher.name else 'T' }}  
+                    </span>  
+  
+                    <span>  
+                        {{ teacher.name if teacher else 'Teacher' }}  
+                    </span>  
+  
+                    <form  
+                        action="{{ url_for('teacher_logout') }}"  
+                        method="POST"  
+                    >  
+                        <button  
+                            type="submit"  
+                            class="logout-button"  
+                        >  
+                            Logout  
+                        </button>  
+                    </form>  
+  
+                </div>  
+  
+            </header>  
+  
+            <main class="dashboard-content">  
+  
+                {% if page == "dashboard" %}  
+  
+                <!-- DASHBOARD PAGE -->  
+  
+                <div class="page-heading">  
+                    <div class="heading-icon">▤</div>  
+  
+                    <div>  
+                        <h2>Teacher Dashboard</h2>  
+                        <p>  
+                            Create AI-powered tests, manage your  
+                            questions and view student results.  
+                        </p>  
+                    </div>  
+                </div>  
+  
+                <div class="stats">  
+  
+                    <div class="stat">  
+                        <div class="stat-icon">▤</div>  
+  
+                        <div>  
+                            <span class="stat-label">  
+                                Total Tests  
+                            </span>  
+  
+                            <strong>  
+                                {{ quizzes | length }}  
+                            </strong>  
+                        </div>  
+                    </div>  
+  
+                    <div class="stat">  
+                        <div class="stat-icon">↗</div>  
+  
+                        <div>  
+                            <span class="stat-label">  
+                                Published Tests  
+                            </span>  
+  
+                            <strong>  
+                                {{  
+                                    quizzes  
+                                    | selectattr(  
+                                        "status",  
+                                        "equalto",  
+                                        "published"  
+                                    )  
+                                    | list  
+                                    | length  
+                                }}  
+                            </strong>  
+                        </div>  
+                    </div>  
+  
+                    <div class="stat">  
+                        <div class="stat-icon">▣</div>  
+  
+                        <div>  
+                            <span class="stat-label">  
+                                Draft Tests  
+                            </span>  
+  
+                            <strong>  
+                                {{  
+                                    quizzes  
+                                    | selectattr(  
+                                        "status",  
+                                        "equalto",  
+                                        "draft"  
+                                    )  
+                                    | list  
+                                    | length  
+                                }}  
+                            </strong>  
+                        </div>  
+                    </div>  
+  
+                </div>  
+  
+                <div class="quick-links">  
+  
+                    <a  
+                        href="{{ url_for('teacher_create_page') }}"  
+                        class="quick-link"  
+                    >  
+                        <span class="quick-link-icon">＋</span>  
+  
+                        <h3>Create Test</h3>  
+  
+                        <p>  
+                            Generate AI questions or add  
+                            your own questions.  
+                        </p>  
+                    </a>  
+  
+                    <a  
+                        href="{{ url_for('teacher_my_tests_page') }}"  
+                        class="quick-link"  
+                    >  
+                        <span class="quick-link-icon">☷</span>  
+  
+                        <h3>My Tests</h3>  
+  
+                        <p>  
+                            View, edit and publish  
+                            your saved tests.  
+                        </p>  
+                    </a>  
+  
+                    <a  
+                        href="{{ url_for('teacher_student_results_page') }}"  
+                        class="quick-link"  
+                    >  
+                        <span class="quick-link-icon">▥</span>  
+  
+                        <h3>Student Results</h3>  
+  
+                        <p>  
+                            Check scores from students  
+                            who completed your tests.  
+                        </p>  
+                    </a>  
+  
+                </div>  
+  
+                {% elif page == "create" %}  
+  
+                <!-- CREATE TEST PAGE -->  
+  
+                <section class="card">  
+  
+                    <div class="create-heading">  
+                        <div class="heading-icon">+</div>  
+  
+                        <div>  
+                            <h2 id="editorTitle">  
+                                Create a New Test  
+                            </h2>  
+  
+                            <p>  
+                                Upload study material or paste notes.  
+                                Review AI-generated questions  
+                                before saving.  
+                            </p>  
+                        </div>  
+  
+                        <button  
+                            type="button"  
+                            id="newTestButton"  
+                            class="secondary new-test"  
+                        >  
+                            + New Test  
+                        </button>  
+                    </div>  
+  
+                    <form id="generateForm">  
+  
+                        <label for="testTitle">  
+                            Test Title  
+                        </label>  
+  
+                        <input  
+                            type="text"  
+                            id="testTitle"  
+                            maxlength="200"  
+                            placeholder="Example: Python Unit Test"  
+                            required  
+                        >  
+  
+                        <div class="two-columns">  
+  
+                            <div>  
+                                <label for="questionCount">  
+                                    Number of Questions  
+                                </label>  
+  
+                                <select id="questionCount">  
+                                    <option value="5">  
+                                        5 Questions  
+                                    </option>  
+  
+                                    <option value="10" selected>  
+                                        10 Questions  
+                                    </option>  
+  
+                                    <option value="15">  
+                                        15 Questions  
+                                    </option>  
+  
+                                    <option value="20">  
+                                        20 Questions  
+                                    </option>  
+  
+                                    <option value="25">  
+                                        25 Questions  
+                                    </option>  
+  
+                                    <option value="30">  
+                                        30 Questions  
+                                    </option>  
+                                </select>  
+                            </div>  
+  
+                            <div>  
+                                <label for="studyFiles">  
+                                    Upload Study Material  
+                                </label>  
+  
+                                <input  
+                                    type="file"  
+                                    id="studyFiles"  
+                                    accept=".pdf,.txt,.jpg,.jpeg,.png,.webp"  
+                                    multiple  
+                                >  
+  
+                                <p class="file-hint">  
+                                    PDF, TXT, JPG, PNG, WEBP ·  
+                                    Maximum 25 MB and 10 images  
+                                </p>  
+                            </div>  
+  
+                        </div>  
+  
+                        <label for="studyNotes">  
+                            Paste Study Notes  
+                        </label>  
+  
+                        <textarea  
+                            id="studyNotes"  
+                            placeholder="Or paste your study material here..."  
+                        ></textarea>  
+  
+                        <div class="actions">  
+  
+                            <button  
+                                type="submit"  
+                                id="generateButton"  
+                            >  
+                                ✦ Generate Test  
+                            </button>  
+  
+                            <button  
+                                type="button"  
+                                id="addManualButton"  
+                                class="secondary"  
+                            >  
+                                + Add Question Manually  
+                            </button>  
+  
+                        </div>  
+  
+                    </form>  
+  
+                    <div  
+                        id="editorMessage"  
+                        class="message hidden"  
+                        role="status"  
+                        aria-live="polite"  
+                    ></div>  
+  
+                    <!-- QUESTION EDITOR -->  
+  
+                    <section  
+                        id="questionEditor"  
+                        class="hidden"  
+                    >  
+  
+                        <hr  
+                            style="border:0;border-top:1px solid #E5E7EB;margin:30px 0;"  
+                        >  
+  
+                        <div class="section-title">  
+  
+                            <h2>  
+                                Review and Edit Questions  
+                            </h2>  
+  
+                            <span  
+                                id="questionTotal"  
+                                class="badge draft"  
+                            >  
+                                0 Questions  
+                            </span>  
+  
+                        </div>  
+  
+                        <p class="muted">  
+                            Check every question and correct  
+                            answer before publishing.  
+                        </p>  
+  
+                        <div id="questionsContainer"></div>  
+  
+                        <div class="actions">  
+  
+                            <button  
+                                type="button"  
+                                id="saveDraftButton"  
+                                class="secondary"  
+                            >  
+                                Save as Draft  
+                            </button>  
+  
+                            <button  
+                                type="button"  
+                                id="publishButton"  
+                            >  
+                                Publish Test  
+                            </button>  
+  
+                            <button  
+                                type="button"  
+                                id="addAnotherButton"  
+                                class="secondary"  
+                            >  
+                                + Add Question  
+                            </button>  
+  
+                        </div>  
+  
+                    </section>  
+  
+                </section>  
+  
+                {% elif page == "my_tests" %}  
+  
+                <!-- MY TESTS PAGE -->  
+  
+                <div class="page-heading">  
+                    <div class="heading-icon">☷</div>  
+  
+                    <div>  
+                        <h2>My Tests</h2>  
+  
+                        <p>  
+                            View, edit and publish  
+                            your saved tests.  
+                        </p>  
+                    </div>  
+                </div>  
+  
+                <section class="card">  
+  
+                    <div class="section-title">  
+  
+                        <h2>Saved Tests</h2>  
+  
+                        <div class="top-actions">  
+  
+                            <a  
+                                href="{{ url_for('teacher_create_page') }}"  
+                                class="button"  
+                            >  
+                                + Create Test  
+                            </a>  
+  
+                            <button  
+                                type="button"  
+                                id="refreshTestsButton"  
+                                class="secondary"  
+                            >  
+                                Refresh  
+                            </button>  
+  
+                        </div>  
+  
+                    </div>  
+  
+                    <p class="card-description">  
+                        Tests with student attempts  
+                        cannot be edited or deleted.  
+                    </p>  
+  
+                    <div  
+                        id="testsContainer"  
+                        aria-live="polite"  
+                    >  
+                        <p class="muted">  
+                            Loading your tests...  
+                        </p>  
+                    </div>  
+  
+                </section>  
+  
+                {% elif page == "results" %}  
+  
+                <!-- STUDENT RESULTS PAGE -->  
+  
+                <div class="page-heading">  
+                    <div class="heading-icon">▥</div>  
+  
+                    <div>  
+                        <h2>Student Results</h2>  
+  
+                        <p>  
+                            View scores from students who  
+                            have submitted your published tests.  
+                        </p>  
+                    </div>  
+                </div>  
+  
+                <section class="card">  
+  
+                    <div class="section-title">  
+  
+                        <h2>All Results</h2>  
+  
+                        <button  
+                            type="button"  
+                            id="refreshResultsButton"  
+                            class="secondary"  
+                        >  
+                            Refresh Results  
+                        </button>  
+  
+                    </div>  
+  
+                    <p class="card-description">  
+                        Results will appear after  
+                        students submit their tests.  
+                    </p>  
+  
+                    <div  
+                        id="resultsContainer"  
+                        aria-live="polite"  
+                    >  
+                        <p class="muted">  
+                            Loading results...  
+                        </p>  
+                    </div>  
+  
+                </section>  
+  
+                {% endif %}  
+  
+            </main>  
+        </div>  
+    </div>  
+  
+    {% if page == "create" %}  
+  
+    <!-- CREATE AND EDIT TEST JAVASCRIPT -->  
+  
+    <script>  
+    (function () {  
+        "use strict";  
+  
+        const $ = (id) => document.getElementById(id);  
+        const letters = ["A", "B", "C", "D"];  
+  
+        let currentQuestions = [];  
+        let editingQuizId = null;  
+        let busy = false;  
+  
+        function escapeHTML(value) {  
+            return String(value ?? "").replace(  
+                /[&<>"']/g,  
+                (character) => ({  
+                    "&": "&amp;",  
+                    "<": "&lt;",  
+                    ">": "&gt;",  
+                    '"': "&quot;",  
+                    "'": "&#39;"  
+                })[character]  
+            );  
+        }  
+  
+        function showMessage(text, type = "info") {  
+            const element = $("editorMessage");  
+  
+            element.textContent = text;  
+            element.className = "message " + type;  
+        }  
+  
+        function setBusy(value) {  
+            busy = value;  
+  
+            [  
+                "generateButton",  
+                "saveDraftButton",  
+                "publishButton",  
+                "addManualButton",  
+                "addAnotherButton",  
+                "newTestButton"  
+            ].forEach((id) => {  
+                const element = $(id);  
+  
+                if (element) {  
+                    element.disabled = value;  
+                }  
+            });  
+        }  
+  
+        async function readResponse(response) {  
+            const data = await response.json().catch(  
+                () => ({})  
+            );  
+  
+            if (!response.ok) {  
+                if (response.status === 401) {  
+                    throw new Error(  
+                        "Your session has expired. Please log in again."  
+                    );  
+                }  
+  
+                throw new Error(  
+                    data.error || "Something went wrong."  
+                );  
+            }  
+  
+            return data;  
+        }  
+  
+        function emptyQuestion() {  
+            return {  
+                question: "",  
+                options: ["", "", "", ""],  
+                correct_answer: "A",  
+                explanation: ""  
+            };  
+        }  
+  
+        function renderQuestions() {  
+            const container = $("questionsContainer");  
+  
+            container.innerHTML = "";  
+  
+            $("questionEditor").classList.toggle(  
+                "hidden",  
+                currentQuestions.length === 0  
+            );  
+  
+            $("questionTotal").textContent =  
+                currentQuestions.length + " Questions";  
+  
+            currentQuestions.forEach((item, index) => {  
+                const card = document.createElement("div");  
+  
+                card.className = "question-card";  
+                card.dataset.index = index;  
+  
+                const optionFields = letters.map(  
+                    (letter, optionIndex) => `  
+                        <div>  
+                            <label>Option ${letter}</label>  
+  
+                            <input  
+                                class="option-input"  
+                                data-option="${optionIndex}"  
+                                value="${escapeHTML(  
+                                    item.options[optionIndex]  
+                                )}"  
+                                required  
+                            >  
+                        </div>  
+                    `  
+                ).join("");  
+  
+                card.innerHTML = `  
+                    <div class="question-heading">  
+                        <h3>Question ${index + 1}</h3>  
+  
+                        <button  
+                            type="button"  
+                            class="danger remove-question"  
+                        >  
+                            Delete Question  
+                        </button>  
+                    </div>  
+  
+                    <label>Question</label>  
+  
+                    <textarea  
+                        class="question-input"  
+                        required  
+                    >${escapeHTML(item.question)}</textarea>  
+  
+                    <div class="options-grid">  
+                        ${optionFields}  
+                    </div>  
+  
+                    <label>Correct Answer</label>  
+  
+                    <select class="answer-input">  
+                        ${letters.map((letter) => `  
+                            <option  
+                                value="${letter}"  
+                                ${  
+                                    item.correct_answer === letter  
+                                        ? "selected"  
+                                        : ""  
+                                }  
+                            >  
+                                Option ${letter}  
+                            </option>  
+                        `).join("")}  
+                    </select>  
+  
+                    <label>Explanation (Optional)</label>  
+  
+                    <textarea  
+                        class="explanation-input"  
+                        placeholder="Why is this answer correct?"  
+                    >${escapeHTML(  
+                        item.explanation || ""  
+                    )}</textarea>  
+                `;  
+  
+                card.querySelector(  
+                    ".remove-question"  
+                ).addEventListener("click", () => {  
+                    if (busy) {  
+                        return;  
+                    }  
+  
+                    collectQuestions();  
+  
+                    currentQuestions.splice(index, 1);  
+  
+                    renderQuestions();  
+                });  
+  
+                container.appendChild(card);  
+            });  
+        }  
+  
+        function collectQuestions() {  
+            const cards = [  
+                ...document.querySelectorAll(  
+                    "#questionsContainer .question-card"  
+                )  
+            ];  
+  
+            currentQuestions = cards.map((card) => ({  
+                question: card.querySelector(  
+                    ".question-input"  
+                ).value.trim(),  
+  
+                options: [  
+                    ...card.querySelectorAll(".option-input")  
+                ].map((input) => input.value.trim()),  
+  
+                correct_answer: card.querySelector(  
+                    ".answer-input"  
+                ).value,  
+  
+                explanation: card.querySelector(  
+                    ".explanation-input"  
+                ).value.trim()  
+            }));  
+  
+            return currentQuestions;  
+        }  
+  
+        function validateQuestions(questions) {  
+            if (  
+                questions.length < 1 ||  
+                questions.length > 30  
+            ) {  
+                throw new Error(  
+                    "A test must have 1 to 30 questions."  
+                );  
+            }  
+  
+            for (  
+                let index = 0;  
+                index < questions.length;  
+                index++  
+            ) {  
+                const item = questions[index];  
+  
+                if (  
+                    !item.question ||  
+                    item.options.some(  
+                        (option) => !option  
+                    )  
+                ) {  
+                    throw new Error(  
+                        "Complete question " +  
+                        (index + 1) +  
+                        " and all four options."  
+                    );  
+                }  
+            }  
+        }  
+  
+        // GENERATE AI QUESTIONS  
+  
+        $("generateForm").addEventListener(  
+            "submit",  
+            async (event) => {  
+                event.preventDefault();  
+  
+                if (busy) {  
+                    return;  
+                }  
+  
+                const title = $("testTitle").value.trim();  
+                const notes = $("studyNotes").value.trim();  
+                const files = [...$("studyFiles").files];  
+  
+                if (!title) {  
+                    showMessage(  
+                        "Please enter a test title.",  
+                        "error"  
+                    );  
+  
+                    return;  
+                }  
+  
+                if (!notes && files.length === 0) {  
+                    showMessage(  
+                        "Upload material or paste your notes.",  
+                        "error"  
+                    );  
+  
+                    return;  
+                }  
+  
+                const totalSize = files.reduce(  
+                    (sum, file) => sum + file.size,  
+                    0  
+                );  
+  
+                const imageCount = files.filter(  
+                    (file) => /\.(jpg|jpeg|png|webp)$/i.test(  
+                        file.name  
+                    )  
+                ).length;  
+  
+                if (totalSize > 25 * 1024 * 1024) {  
+                    showMessage(  
+                        "Files exceed the 25 MB limit.",  
+                        "error"  
+                    );  
+  
+                    return;  
+                }  
+  
+                if (imageCount > 10) {  
+                    showMessage(  
+                        "Maximum 10 images allowed.",  
+                        "error"  
+                    );  
+  
+                    return;  
+                }  
+  
+                if (  
+                    currentQuestions.length > 0 &&  
+                    !confirm(  
+                        "Generate new questions? Your unsaved " +  
+                        "question edits will be replaced."  
+                    )  
+                ) {  
+                    return;  
+                }  
+  
+                const formData = new FormData();  
+  
+                formData.append("title", title);  
+  
+                formData.append(  
+                    "count",  
+                    $("questionCount").value  
+                );  
+  
+                formData.append("study_text", notes);  
+  
+                files.forEach((file) => {  
+                    formData.append("files", file);  
+                });  
+  
+                setBusy(true);  
+  
+                showMessage(  
+                    "AI is generating questions. Please wait...",  
+                    "info"  
+                );  
+  
+                try {  
+                    const response = await fetch(  
+                        "/teacher/generate",  
+                        {  
+                            method: "POST",  
+                            body: formData  
+                        }  
+                    );  
+  
+                    const data = await readResponse(  
+                        response  
+                    );  
+  
+                    currentQuestions = data.questions;  
+  
+                    renderQuestions();  
+  
+                    showMessage(  
+                        currentQuestions.length +  
+                        " questions generated using " +  
+                        data.model +  
+                        ". Review them before saving.",  
+                        "success"  
+                    );  
+  
+                    $("questionEditor").scrollIntoView({  
+                        behavior: "smooth"  
+                    });  
+  
+                } catch (error) {  
+                    showMessage(  
+                        error.message,  
+                        "error"  
+                    );  
+  
+                } finally {  
+                    setBusy(false);  
+                }  
+            }  
+        );  
+  
+        // ADD QUESTION MANUALLY  
+  
+        function addQuestion() {  
+            if (busy) {  
+                return;  
+            }  
+  
+            collectQuestions();  
+  
+            if (currentQuestions.length >= 30) {  
+                showMessage(  
+                    "Maximum 30 questions allowed.",  
+                    "error"  
+                );  
+  
+                return;  
+            }  
+  
+            currentQuestions.push(  
+                emptyQuestion()  
+            );  
+  
+            renderQuestions();  
+  
+            $("questionEditor").scrollIntoView({  
+                behavior: "smooth"  
+            });  
+        }  
+  
+        $("addManualButton").addEventListener(  
+            "click",  
+            addQuestion  
+        );  
+  
+        $("addAnotherButton").addEventListener(  
+            "click",  
+            addQuestion  
+        );  
+  
+        // SAVE DRAFT OR PUBLISH  
+  
+        async function saveTest(status) {  
+            if (busy) {  
+                return;  
+            }  
+  
+            const title = $("testTitle").value.trim();  
+            const questions = collectQuestions();  
+  
+            if (!title || title.length > 200) {  
+                showMessage(  
+                    "Enter a valid test title.",  
+                    "error"  
+                );  
+  
+                return;  
+            }  
+  
+            try {  
+                validateQuestions(questions);  
+  
+            } catch (error) {  
+                showMessage(  
+                    error.message,  
+                    "error"  
+                );  
+  
+                return;  
+            }  
+  
+            if (  
+                status === "published" &&  
+                !confirm(  
+                    "Publish this test for students?"  
+                )  
+            ) {  
+                return;  
+            }  
+  
+            const url = editingQuizId === null  
+                ? "/teacher/quizzes"  
+                : "/teacher/quizzes/" + editingQuizId;  
+  
+            const method = editingQuizId === null  
+                ? "POST"  
+                : "PUT";  
+  
+            setBusy(true);  
+  
+            showMessage(  
+                "Saving your test...",  
+                "info"  
+            );  
+  
+            try {  
+                const response = await fetch(url, {  
+                    method: method,  
+  
+                    headers: {  
+                        "Content-Type": "application/json"  
+                    },  
+  
+                    body: JSON.stringify({  
+                        title,  
+                        status,  
+                        questions  
+                    })  
+                });  
+  
+                const data = await readResponse(  
+                    response  
+                );  
+  
+                editingQuizId = data.quiz.id;  
+  
+                $("editorTitle").textContent =  
+                    "Edit Test #" + editingQuizId;  
+  
+                showMessage(  
+                    status === "published"  
+                        ? "Test published successfully!"  
+                        : "Draft saved successfully!",  
+                    "success"  
+                );  
+  
+            } catch (error) {  
+                showMessage(  
+                    error.message,  
+                    "error"  
+                );  
+  
+            } finally {  
+                setBusy(false);  
+            }  
+        }  
+  
+        $("saveDraftButton").addEventListener(  
+            "click",  
+            () => saveTest("draft")  
+        );  
+  
+        $("publishButton").addEventListener(  
+            "click",  
+            () => saveTest("published")  
+        );  
+  
+        // RESET EDITOR  
+  
+        function resetEditor() {  
+            if (  
+                currentQuestions.length > 0 &&  
+                !confirm(  
+                    "Start a new test? Unsaved changes will be lost."  
+                )  
+            ) {  
+                return;  
+            }  
+  
+            editingQuizId = null;  
+            currentQuestions = [];  
+  
+            $("editorTitle").textContent =  
+                "Create a New Test";  
+  
+            $("generateForm").reset();  
+  
+            $("editorMessage").classList.add(  
+                "hidden"  
+            );  
+  
+            renderQuestions();  
+  
+            window.history.replaceState(  
+                {},  
+                "",  
+                "{{ url_for('teacher_create_page') }}"  
+            );  
+  
+            window.scrollTo({  
+                top: 0,  
+                behavior: "smooth"  
+            });  
+        }  
+  
+        $("newTestButton").addEventListener(  
+            "click",  
+            resetEditor  
+        );  
+  
+        // LOAD SAVED TEST FOR EDITING  
+  
+        async function loadSavedTest(quizId) {  
+            try {  
+                const response = await fetch(  
+                    "/teacher/quizzes/" + quizId  
+                );  
+  
+                const data = await readResponse(  
+                    response  
+                );  
+  
+                const quiz = data.quiz;  
+  
+                if (quiz.attempt_count > 0) {  
+                    showMessage(  
+                        "This test already has student attempts and cannot be edited.",  
+                        "error"  
+                    );  
+  
+                    return;  
+                }  
+  
+                editingQuizId = quiz.id;  
+  
+                $("testTitle").value = quiz.title;  
+                $("studyNotes").value = "";  
+                $("studyFiles").value = "";  
+  
+                currentQuestions = quiz.questions.map(  
+                    (question) => ({  
+                        question: question.question,  
+                        options: [...question.options],  
+                        correct_answer:  
+                            question.correct_answer,  
+                        explanation:  
+                            question.explanation || ""  
+                    })  
+                );  
+  
+                $("editorTitle").textContent =  
+                    "Edit Test #" + quiz.id;  
+  
+                renderQuestions();  
+  
+                showMessage(  
+                    "Test loaded. Edit the questions and save.",  
+                    "info"  
+                );  
+  
+            } catch (error) {  
+                showMessage(  
+                    error.message,  
+                    "error"  
+                );  
+            }  
+        }  
+  
+        // CHECK WHETHER AN EXISTING TEST WAS SELECTED  
+  
+        const searchParams = new URLSearchParams(  
+            window.location.search  
+        );  
+  
+        const editId = searchParams.get("edit");  
+  
+        if (editId && /^[1-9]\d*$/.test(editId)) {  
+            loadSavedTest(Number(editId));  
+        }  
+  
+    })();  
+    </script>  
+  
+    {% elif page == "my_tests" %}  
+  
+    <!-- MY TESTS JAVASCRIPT -->  
+  
+    <script>  
+    (function () {  
+        "use strict";  
+  
+        const container = document.getElementById(  
+            "testsContainer"  
+        );  
+  
+        function escapeHTML(value) {  
+            return String(value ?? "").replace(  
+                /[&<>"']/g,  
+                (character) => ({  
+                    "&": "&amp;",  
+                    "<": "&lt;",  
+                    ">": "&gt;",  
+                    '"': "&quot;",  
+                    "'": "&#39;"  
+                })[character]  
+            );  
+        }  
+  
+        async function readResponse(response) {  
+            const data = await response.json().catch(  
+                () => ({})  
+            );  
+  
+            if (!response.ok) {  
+                throw new Error(  
+                    data.error || "Something went wrong."  
+                );  
+            }  
+  
+            return data;  
+        }  
+  
+        // LOAD ALL TESTS  
+  
+        async function loadTests() {  
+            container.innerHTML = `  
+                <p class="muted">  
+                    Loading your tests...  
+                </p>  
+            `;  
+  
+            try {  
+                const response = await fetch(  
+                    "/teacher/quizzes"  
+                );  
+  
+                const data = await readResponse(  
+                    response  
+                );  
+  
+                const quizzes = data.quizzes;  
+  
+                container.innerHTML = "";  
+  
+                if (quizzes.length === 0) {  
+                    container.innerHTML = `  
+                        <div class="empty">  
+                            <h3>No tests created yet</h3>  
+  
+                            <p class="muted">  
+                                Create your first test.  
+                            </p>  
+                        </div>  
+                    `;  
+  
+                    return;  
+                }  
+  
+                quizzes.forEach((quiz) => {  
+                    const item = document.createElement(  
+                        "div"  
+                    );  
+  
+                    item.className = "quiz-item";  
+  
+                    item.innerHTML = `  
+                        <h3>  
+                            ${escapeHTML(quiz.title)}  
+                        </h3>  
+  
+                        <p class="muted small">  
+                            ${quiz.question_count} Questions  
+  
+                            &nbsp;•&nbsp;  
+  
+                            ${quiz.attempt_count} Attempts  
+                        </p>  
+  
+                        <span class="badge ${  
+                            quiz.status === "published"  
+                                ? "published"  
+                                : "draft"  
+                        }">  
+                            ${escapeHTML(quiz.status)}  
+                        </span>  
+  
+                        <div class="actions"></div>  
+                    `;  
+  
+                    const actions = item.querySelector(  
+                        ".actions"  
+                    );  
+  
+                    if (quiz.attempt_count === 0) {  
+                        const editLink = document.createElement(  
+                            "a"  
+                        );  
+  
+                        editLink.className =  
+                            "button secondary";  
+  
+                        editLink.textContent = "Edit";  
+  
+                        editLink.href =  
+                            "{{ url_for('teacher_create_page') }}" +  
+                            "?edit=" +  
+                            encodeURIComponent(quiz.id);  
+  
+                        actions.appendChild(editLink);  
+  
+                        if (quiz.status === "draft") {  
+                            const publishButton =  
+                                document.createElement(  
+                                    "button"  
+                                );  
+  
+                            publishButton.type = "button";  
+                            publishButton.textContent =  
+                                "Publish";  
+  
+                            publishButton.addEventListener(  
+                                "click",  
+                                () => publishTest(quiz.id)  
+                            );  
+  
+                            actions.appendChild(  
+                                publishButton  
+                            );  
+                        }  
+  
+                        const deleteButton =  
+                            document.createElement(  
+                                "button"  
+                            );  
+  
+                        deleteButton.type = "button";  
+                        deleteButton.className = "danger";  
+                        deleteButton.textContent = "Delete";  
+  
+                        deleteButton.addEventListener(  
+                            "click",  
+                            () => deleteTest(quiz.id)  
+                        );  
+  
+                        actions.appendChild(  
+                            deleteButton  
+                        );  
+  
+                    } else {  
+                        const note = document.createElement(  
+                            "span"  
+                        );  
+  
+                        note.className = "muted small";  
+  
+                        note.textContent =  
+                            "Locked after student attempts";  
+  
+                        actions.appendChild(note);  
+                    }  
+  
+                    container.appendChild(item);  
+                });  
+  
+            } catch (error) {  
+                container.textContent = error.message;  
+            }  
+        }  
+  
+        // PUBLISH DRAFT  
+  
+        async function publishTest(quizId) {  
+            if (!confirm("Publish this test?")) {  
+                return;  
+            }  
+  
+            try {  
+                const response = await fetch(  
+                    "/teacher/quizzes/" +  
+                    quizId +  
+                    "/publish",  
+                    {  
+                        method: "POST"  
+                    }  
+                );  
+  
+                await readResponse(response);  
+  
+                await loadTests();  
+  
+                alert(  
+                    "Test published successfully!"  
+                );  
+  
+            } catch (error) {  
+                alert(error.message);  
+            }  
+        }  
+  
+        // DELETE TEST  
+  
+        async function deleteTest(quizId) {  
+            if (  
+                !confirm(  
+                    "Permanently delete this test?"  
+                )  
+            ) {  
+                return;  
+            }  
+  
+            try {  
+                const response = await fetch(  
+                    "/teacher/quizzes/" + quizId,  
+                    {  
+                        method: "DELETE"  
+                    }  
+                );  
+  
+                await readResponse(response);  
+  
+                await loadTests();  
+  
+                alert(  
+                    "Test deleted successfully."  
+                );  
+  
+            } catch (error) {  
+                alert(error.message);  
+            }  
+        }  
+  
+        document.getElementById(  
+            "refreshTestsButton"  
+        ).addEventListener(  
+            "click",  
+            loadTests  
+        );  
+  
+        loadTests();  
+  
+    })();  
+    </script>  
+  
+    {% elif page == "results" %}  
+  
+    <!-- STUDENT RESULTS JAVASCRIPT -->  
+  
+    <script>  
+    (function () {  
+        "use strict";  
+  
+        const container = document.getElementById(  
+            "resultsContainer"  
+        );  
+  
+        function escapeHTML(value) {  
+            return String(value ?? "").replace(  
+                /[&<>"']/g,  
+                (character) => ({  
+                    "&": "&amp;",  
+                    "<": "&lt;",  
+                    ">": "&gt;",  
+                    '"': "&quot;",  
+                    "'": "&#39;"  
+                })[character]  
+            );  
+        }  
+  
+        async function readResponse(response) {  
+            const data = await response.json().catch(  
+                () => ({})  
+            );  
+  
+            if (!response.ok) {  
+                throw new Error(  
+                    data.error || "Something went wrong."  
+                );  
+            }  
+  
+            return data;  
+        }  
+  
+        // LOAD STUDENT RESULTS  
+  
+        async function loadResults() {  
+            container.innerHTML = `  
+                <p class="muted">  
+                    Loading results...  
+                </p>  
+            `;  
+  
+            try {  
+                const response = await fetch(  
+                    "/teacher/results"  
+                );  
+  
+                const data = await readResponse(  
+                    response  
+                );  
+  
+                container.innerHTML = "";  
+  
+                if (data.results.length === 0) {  
+                    container.innerHTML = `  
+                        <div class="empty">  
+                            <h3>  
+                                No student results yet  
+                            </h3>  
+  
+                            <p class="muted">  
+                                Results will appear here  
+                                after students submit  
+                                their tests.  
+                            </p>  
+                        </div>  
+                    `;  
+  
+                    return;  
+                }  
+  
+                const rows = data.results.map(  
+                    (result) => `  
+                        <tr>  
+                            <td>  
+                                ${escapeHTML(  
+                                    result.student_name  
+                                )}  
+                            </td>  
+  
+                            <td>  
+                                ${escapeHTML(  
+                                    result.roll_no  
+                                )}  
+                            </td>  
+  
+                            <td>  
+                                ${escapeHTML(  
+                                    result.student_class  
+                                )}  
+                            </td>  
+  
+                            <td>  
+                                ${escapeHTML(  
+                                    result.test_title  
+                                )}  
+                            </td>  
+  
+                            <td>  
+                                ${result.score}/${result.total}  
+                            </td>  
+  
+                            <td>  
+                                ${result.percentage}%  
+                            </td>  
+                        </tr>  
+                    `  
+                ).join("");  
+  
+                container.innerHTML = `  
+                    <div class="table-wrap">  
+                        <table>  
+                            <thead>  
+                                <tr>  
+                                    <th>Name</th>  
+                                    <th>Roll No.</th>  
+                                    <th>Class</th>  
+                                    <th>Test</th>  
+                                    <th>Score</th>  
+                                    <th>Percentage</th>  
+                                </tr>  
+                            </thead>  
+  
+                            <tbody>  
+                                ${rows}  
+                            </tbody>  
+                        </table>  
+                    </div>  
+                `;  
+  
+            } catch (error) {  
+                container.textContent = error.message;  
+            }  
+        }  
+  
+        document.getElementById(  
+            "refreshResultsButton"  
+        ).addEventListener(  
+            "click",  
+            loadResults  
+        );  
+  
+        loadResults();  
+  
+    })();  
+    </script>  
+  
+    {% endif %}  
+  
+{% endif %}  
+  
+</body>  
+</html>    
